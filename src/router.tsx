@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import type React from "react";
-import Header from "./components/common/header";
+import Header from "./components/common/Header";
 import RegisterForm from "./components/student/StudentRegisterForm";
 import { StudentProvider } from "./components/student/StudentContext";
 
