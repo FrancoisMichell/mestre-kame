@@ -22,11 +22,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Debug - list workspace (short)
+        run: |
+          echo "PWD: $(pwd)"
+          echo 'Top-level:'
+          ls -la
+          echo 'src listing:'
+          ls -la src || true
+
       - name: Lint
         run: npm run lint
 
-      - name: Typecheck
-        run: npx tsc --noEmit
+      - name: Typecheck (explicit project)
+        run: npx tsc -p tsconfig.app.json --noEmit
 
       - name: Build
         run: npm run build
