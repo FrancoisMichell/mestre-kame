@@ -1,0 +1,114 @@
+import { renderHook, waitFor } from "@testing-library/react";
+import { useFetchStudents, useAddStudent } from "../hooks";
+import { server } from "../mocks/server";
+import { http, HttpResponse } from "msw";
+import { SWRConfig } from "swr";
+
+describe("useFetchStudents", () => {
+  it("should fetch students successfully", async () => {
+    const { result } = renderHook(() => useFetchStudents());
+
+    // Inicialmente em loading
+    expect(result.current.isLoading).toBe(true);
+
+    // Aguarda os dados serem carregados
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Verifica se os dados foram carregados
+    expect(result.current.students).toHaveLength(2);
+    expect(result.current.students[0].name).toBe("Ana Silva");
+    expect(result.current.isError).toBe(false);
+  });
+
+  it("should handle error when fetching students fails", async () => {
+    // Override o handler para retornar erro
+    server.use(
+      http.get("http://localhost:3000/students", () => {
+        return HttpResponse.json(
+          { message: "Internal Server Error" },
+          { status: 500 },
+        );
+      }),
+    );
+
+    const { result } = renderHook(() => useFetchStudents(), {
+      wrapper: ({ children }) => (
+        <SWRConfig
+          value={{ provider: () => new Map(), shouldRetryOnError: false }}
+        >
+          {children}
+        </SWRConfig>
+      ),
+    });
+
+    await waitFor(
+      () => {
+        expect(result.current.isLoading).toBe(false);
+      },
+      { timeout: 5000 },
+    );
+
+    expect(result.current.isError).toBe(true);
+    expect(result.current.error).toBeDefined();
+  });
+});
+
+describe("useAddStudent", () => {
+  it("should add a student successfully", async () => {
+    const { result: addResult } = renderHook(() => useAddStudent());
+
+    const newStudent = {
+      id: "2025001",
+      name: "João Silva",
+      birthday: "2005-03-15",
+      email: "joao@exemplo.com",
+      belt: "branca" as const,
+      trainingSince: "2025-01-10",
+      isActive: true,
+      color: "#e5e7eb",
+    };
+
+    const response = await addResult.current(newStudent);
+
+    expect(response).toEqual(newStudent);
+    expect(response.id).toBe("2025001");
+    expect(response.name).toBe("João Silva");
+  });
+
+  it("should send Authorization header when adding student", async () => {
+    localStorage.setItem("authToken", "test-token-123");
+
+    const { result: addResult } = renderHook(() => useAddStudent());
+
+    const newStudent = {
+      id: "2025002",
+      name: "Maria Santos",
+      birthday: "2004-07-20",
+      email: "maria@exemplo.com",
+      belt: "amarela" as const,
+      trainingSince: "2025-01-10",
+      isActive: true,
+      color: "#facc15",
+    };
+
+    let capturedHeaders: Record<string, string> = {};
+    server.use(
+      http.post("http://localhost:3000/students", ({ request }) => {
+        capturedHeaders = Object.fromEntries(request.headers.entries());
+        return HttpResponse.json(newStudent, { status: 201 });
+      }),
+    );
+
+    await addResult.current(newStudent);
+
+    // Headers podem vir em lowercase
+    const authHeader =
+      capturedHeaders.authorization || capturedHeaders.Authorization;
+    expect(authHeader).toBe("Bearer test-token-123");
+
+    // Limpa localStorage
+    localStorage.removeItem("authToken");
+  });
+});

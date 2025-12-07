@@ -1,62 +1,46 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { Student } from "./StudentTypes";
-import { getBeltColor } from "./StudentUtils";
+import { useFetchStudents, useAddStudent } from "../../api/hooks";
 
 interface StudentContextType {
   students: Student[];
-  addStudent: (student: Student) => void;
+  addStudent: (student: Student) => Promise<void>;
+  isLoading: boolean;
+  error?: Error;
 }
 
 const StudentContext = createContext<StudentContextType | undefined>(undefined);
 
-const studentsData: Student[] = [
-  {
-    id: "2023001",
-    name: "Ana Silva",
-    birthday: "2000-05-20",
-    email: "ana.silva@exemplo.com",
-    isActive: true,
-    belt: "branca", // Rosa para Design
-    trainingSince: "",
-    color: getBeltColor("branca"),
-  },
-  {
-    id: "2023045",
-    name: "Bruno Costa",
-    birthday: "2001-05-20",
-    email: "bruno.c@exemplo.com",
-    isActive: false, // Aluno inativo
-    belt: "amarela", // Verde para Sistemas
-    trainingSince: "2022-01-15",
-    color: getBeltColor("amarela"),
-  },
-  {
-    id: "2023089",
-    name: "Carla Dias",
-    birthday: "2003-05-20",
-    email: "carla.dias@exemplo.com",
-    isActive: true,
-    belt: "laranja", // Azul para Computação
-    trainingSince: "2022-01-15",
-    color: getBeltColor("laranja"),
-  },
-];
-
-interface StudentProviderProps {
-  children: React.ReactNode;
-}
-
-export const StudentProvider: React.FC<StudentProviderProps> = ({
+export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [students, setStudents] = useState<Student[]>(studentsData);
+  const {
+    students: apiStudents,
+    isLoading,
+    error,
+    mutate,
+  } = useFetchStudents();
+  const [localStudents, setLocalStudents] = useState<Student[]>([]);
+  const addStudentAPI = useAddStudent();
 
-  const addStudent = (newStudent: Student) => {
-    setStudents((prevStudents) => [...prevStudents, newStudent]);
+  useEffect(() => {
+    setLocalStudents(apiStudents);
+  }, [apiStudents]);
+
+  const addStudent = async (newStudent: Student) => {
+    try {
+      await addStudentAPI(newStudent);
+      await mutate();
+    } catch (err) {
+      console.error("Failed to add student:", err);
+      throw err;
+    }
   };
 
   return (
-    <StudentContext.Provider value={{ students, addStudent }}>
+    <StudentContext.Provider
+      value={{ students: localStudents, addStudent, isLoading, error }}
+    >
       {children}
     </StudentContext.Provider>
   );
@@ -65,7 +49,7 @@ export const StudentProvider: React.FC<StudentProviderProps> = ({
 // eslint-disable-next-line react-refresh/only-export-components
 export const useStudents = () => {
   const context = useContext(StudentContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error("useStudents must be used within a StudentProvider");
   }
   return context;
