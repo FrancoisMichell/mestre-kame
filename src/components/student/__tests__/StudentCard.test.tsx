@@ -44,14 +44,14 @@ describe("StudentCard", () => {
     render(<StudentCard student={mockActiveStudent} />);
 
     expect(screen.getByText(/aniversário:/i)).toBeDefined();
-    expect(screen.getByText(/14\/05\/2000/i)).toBeDefined();
+    expect(screen.getByText(/15\/05\/2000/i)).toBeDefined();
   });
 
   it("displays training start date in Brazilian format", () => {
     render(<StudentCard student={mockActiveStudent} />);
 
     expect(screen.getByText(/treina desde:/i)).toBeDefined();
-    expect(screen.getByText(/09\/01\/2022/i)).toBeDefined();
+    expect(screen.getByText(/10\/01\/2022/i)).toBeDefined();
   });
 
   it('shows "Ativo" status for active students', () => {

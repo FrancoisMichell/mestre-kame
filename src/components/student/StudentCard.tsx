@@ -4,11 +4,9 @@ import { getBeltColor } from "./StudentUtils";
 
 const formatDate = (dateString: string | null) => {
   if (!dateString) return "";
-  return new Date(dateString).toLocaleDateString("pt-BR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
+  // Parseia a data em formato DD/MM/YYYY de forma determinística
+  const [year, month, day] = dateString.split("-");
+  return `${day}/${month}/${year}`;
 };
 
 const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
