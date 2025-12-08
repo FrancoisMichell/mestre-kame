@@ -17,8 +17,8 @@ describe("useFetchStudents", () => {
     });
 
     // Verifica se os dados foram carregados
-    expect(result.current.students).toHaveLength(2);
-    expect(result.current.students[0].name).toBe("Ana Silva");
+    expect(result.current.students).toHaveLength(3);
+    expect(result.current.students[0].name).toBe("João Silva");
     expect(result.current.isError).toBe(false);
   });
 

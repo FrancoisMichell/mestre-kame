@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext } from "react";
 import type { Student } from "./StudentTypes";
 import { useFetchStudents, useAddStudent } from "../../api/hooks";
 
@@ -20,12 +20,10 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
     error,
     mutate,
   } = useFetchStudents();
-  const [localStudents, setLocalStudents] = useState<Student[]>([]);
+  // Removido localStudents, usa diretamente apiStudents
   const addStudentAPI = useAddStudent();
 
-  useEffect(() => {
-    setLocalStudents(apiStudents);
-  }, [apiStudents]);
+  // Não é mais necessário sincronizar localStudents
 
   const addStudent = async (newStudent: Student) => {
     try {
@@ -39,7 +37,7 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <StudentContext.Provider
-      value={{ students: localStudents, addStudent, isLoading, error }}
+      value={{ students: apiStudents ?? [], addStudent, isLoading, error }}
     >
       {children}
     </StudentContext.Provider>

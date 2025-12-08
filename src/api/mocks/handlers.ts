@@ -5,35 +5,40 @@ const API_BASE_URL = "http://localhost:3000";
 
 const mockStudents: Student[] = [
   {
-    id: "2023001",
-    name: "Ana Silva",
-    birthday: "2000-05-20",
-    email: "ana.silva@exemplo.com",
-    isActive: true,
+    id: "1",
+    name: "João Silva",
     belt: "branca",
-    trainingSince: "",
-    color: "#e5e7eb",
+    color: "#E5E7EB",
+    birthday: "2000-05-15",
+    email: "joao@exemplo.com",
+    trainingSince: "2024-01-10",
+    isActive: true,
   },
   {
-    id: "2023045",
-    name: "Bruno Costa",
-    birthday: "2001-05-20",
-    email: "bruno.c@exemplo.com",
+    id: "2",
+    name: "Maria Santos",
+    belt: "azul",
+    color: "#2563eb",
+    birthday: "1998-08-20",
+    email: "maria@exemplo.com",
+    trainingSince: "2023-06-15",
+    isActive: true,
+  },
+  {
+    id: "3",
+    name: "Carlos Oliveira",
+    belt: "marrom",
+    color: "#8B6F47",
+    birthday: "1995-03-10",
+    email: "carlos@exemplo.com",
+    trainingSince: "2022-09-01",
     isActive: false,
-    belt: "amarela",
-    trainingSince: "2022-01-15",
-    color: "#facc15",
   },
 ];
 
 export const handlers = [
   http.get(`${API_BASE_URL}/students`, () => {
-    return HttpResponse.json(mockStudents, { status: 200 });
-  }),
-
-  http.post(`${API_BASE_URL}/students`, async ({ request }) => {
-    const newStudent = (await request.json()) as Student;
-    return HttpResponse.json(newStudent, { status: 201 });
+    return HttpResponse.json(mockStudents);
   }),
 
   http.get(`${API_BASE_URL}/students/:id`, ({ params }) => {
@@ -44,6 +49,41 @@ export const handlers = [
         { status: 404 },
       );
     }
-    return HttpResponse.json(student, { status: 200 });
+    return HttpResponse.json(student);
+  }),
+
+  http.post(`${API_BASE_URL}/students`, async ({ request }) => {
+    const body = (await request.json()) as Omit<Student, "id">;
+    const newStudent: Student = {
+      id: String(Math.random()),
+      ...body,
+    };
+    mockStudents.push(newStudent);
+    return HttpResponse.json(newStudent, { status: 201 });
+  }),
+
+  http.put(`${API_BASE_URL}/students/:id`, async ({ params, request }) => {
+    const student = mockStudents.find((s) => s.id === params.id);
+    if (!student) {
+      return HttpResponse.json(
+        { message: "Student not found" },
+        { status: 404 },
+      );
+    }
+    const body = (await request.json()) as Partial<Student>;
+    Object.assign(student, body);
+    return HttpResponse.json(student);
+  }),
+
+  http.delete(`${API_BASE_URL}/students/:id`, ({ params }) => {
+    const index = mockStudents.findIndex((s) => s.id === params.id);
+    if (index === -1) {
+      return HttpResponse.json(
+        { message: "Student not found" },
+        { status: 404 },
+      );
+    }
+    mockStudents.splice(index, 1);
+    return HttpResponse.json({ message: "Student deleted" });
   }),
 ];
