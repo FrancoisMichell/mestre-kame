@@ -1,8 +1,10 @@
-import { renderHook, waitFor } from "@testing-library/react";
+import { SWRConfig } from "swr";
+import { waitFor } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
+import { renderHook } from "@testing-library/react";
 import { useFetchStudents, useAddStudent } from "../hooks";
 import { server } from "../mocks/server";
 import { http, HttpResponse } from "msw";
-import { SWRConfig } from "swr";
 
 describe("useFetchStudents", () => {
   it("should fetch students successfully", async () => {

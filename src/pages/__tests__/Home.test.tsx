@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { BrowserRouter } from "react-router-dom";
@@ -14,19 +15,21 @@ const mockStudents: Student[] = [
   {
     id: "1",
     name: "João Silva",
-    belt: "Branca",
+    belt: "branca",
     color: "#FFFFFF",
-    birthday: new Date("2000-05-15"),
-    trainingStartDate: new Date("2024-01-10"),
+    birthday: "2000-05-15",
+    trainingSince: "2024-01-10",
+    email: "joao@email.com",
     isActive: true,
   },
   {
     id: "2",
     name: "Maria Santos",
-    belt: "Azul",
+    belt: "azul",
     color: "#2563eb",
-    birthday: new Date("1998-08-20"),
-    trainingStartDate: new Date("2023-06-15"),
+    birthday: "1998-08-20",
+    trainingSince: "2023-06-15",
+    email: "maria@email.com",
     isActive: false,
   },
 ];
@@ -48,7 +51,7 @@ describe("Home", () => {
     vi.mocked(StudentContext.useStudents).mockReturnValue({
       students: [],
       isLoading: false,
-      error: null,
+      error: undefined,
       addStudent: vi.fn(),
     });
 
@@ -60,7 +63,7 @@ describe("Home", () => {
     vi.mocked(StudentContext.useStudents).mockReturnValue({
       students: [],
       isLoading: true,
-      error: null,
+      error: undefined,
       addStudent: vi.fn(),
     });
 
@@ -110,7 +113,7 @@ describe("Home", () => {
     vi.mocked(StudentContext.useStudents).mockReturnValue({
       students: [],
       isLoading: false,
-      error: null,
+      error: undefined,
       addStudent: vi.fn(),
     });
 
@@ -122,7 +125,7 @@ describe("Home", () => {
     vi.mocked(StudentContext.useStudents).mockReturnValue({
       students: mockStudents,
       isLoading: false,
-      error: null,
+      error: undefined,
       addStudent: vi.fn(),
     });
 
@@ -137,7 +140,7 @@ describe("Home", () => {
     vi.mocked(StudentContext.useStudents).mockReturnValue({
       students: mockStudents,
       isLoading: false,
-      error: null,
+      error: undefined,
       addStudent: vi.fn(),
     });
 
@@ -152,7 +155,7 @@ describe("Home", () => {
     vi.mocked(StudentContext.useStudents).mockReturnValue({
       students: mockStudents,
       isLoading: false,
-      error: null,
+      error: undefined,
       addStudent: vi.fn(),
     });
 
@@ -171,7 +174,7 @@ describe("Home", () => {
     vi.mocked(StudentContext.useStudents).mockReturnValue({
       students: [],
       isLoading: false,
-      error: null,
+      error: undefined,
       addStudent: vi.fn(),
     });
 
@@ -193,7 +196,7 @@ describe("Home", () => {
     vi.mocked(StudentContext.useStudents).mockReturnValue({
       students: [],
       isLoading: false,
-      error: null,
+      error: undefined,
       addStudent: vi.fn(),
     });
 
