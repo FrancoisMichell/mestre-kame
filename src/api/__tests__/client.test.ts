@@ -1,9 +1,17 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { apiClient } from "../client";
+import { server } from "../mocks/server";
+import { http, HttpResponse } from "msw";
 
 describe("API Client", () => {
   beforeEach(() => {
     localStorage.clear();
+    // Adiciona handler padrão para GET / nos testes
+    server.use(
+      http.get("http://localhost:3000/", () => {
+        return HttpResponse.json({ success: true });
+      }),
+    );
   });
 
   it("should create axios instance with correct baseURL", () => {
