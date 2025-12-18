@@ -1,11 +1,19 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
   };
 
   return (
@@ -42,6 +50,19 @@ const Header = () => {
             >
               Configurações
             </a>
+            {user && (
+              <div className="flex items-center space-x-2">
+                <span className="text-gray-700 text-sm font-medium">
+                  {user.name}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="text-red-600 hover:bg-red-50 hover:text-red-700 px-3 py-2 rounded-md text-sm font-medium transition duration-150"
+                >
+                  Sair
+                </button>
+              </div>
+            )}
           </div>
         </nav>
 
@@ -49,7 +70,7 @@ const Header = () => {
         <div className="md:hidden">
           <button
             onClick={toggleMenu}
-            className="text-gray-500 hover:text-gray-700p-2 rounded-md"
+            className="text-gray-500 hover:text-gray-700 p-2 rounded-md"
           >
             <svg
               className="h-6 w-6"
@@ -90,6 +111,22 @@ const Header = () => {
           >
             Configurações
           </a>
+          {user && (
+            <>
+              <div className="px-3 py-2 text-gray-700 text-sm font-medium border-t border-gray-200 mt-2">
+                {user.name}
+              </div>
+              <button
+                onClick={() => {
+                  handleLogout();
+                  toggleMenu();
+                }}
+                className="block w-full text-left text-red-600 hover:bg-red-50 hover:text-red-700 px-3 py-2 rounded-md text-base font-medium"
+              >
+                Sair
+              </button>
+            </>
+          )}
         </div>
       </div>
     </header>

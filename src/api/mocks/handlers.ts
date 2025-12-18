@@ -86,4 +86,43 @@ export const handlers = [
     mockStudents.splice(index, 1);
     return HttpResponse.json({ message: "Student deleted" });
   }),
+
+  http.post(`${API_BASE_URL}/auth/login`, async ({ request }) => {
+    const { registry, password } = (await request.json()) as {
+      registry: string;
+      password: string;
+    };
+
+    // Mock de validação simples
+    if (registry === "2024010" && password === "senha123") {
+      return HttpResponse.json({
+        token: "mock-jwt-token-12345",
+        user: {
+          id: "1",
+          name: "João das Neves",
+          registry: "2024010",
+          email: "joao@email.com",
+          role: "student",
+        },
+      });
+    }
+
+    if (registry === "admin" && password === "admin123") {
+      return HttpResponse.json({
+        token: "mock-jwt-token-admin",
+        user: {
+          id: "2",
+          name: "Administrador",
+          registry: "admin",
+          email: "admin@mestrekame.com",
+          role: "admin",
+        },
+      });
+    }
+
+    return HttpResponse.json(
+      { message: "Matrícula ou senha inválidos" },
+      { status: 401 },
+    );
+  }),
 ];

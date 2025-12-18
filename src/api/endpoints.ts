@@ -2,6 +2,11 @@
 // Útil para manutenção e evitar duplicação de URLs
 
 export const ENDPOINTS = {
+  AUTH: {
+    LOGIN: "/teacher/login",
+    LOGOUT: "/auth/logout",
+    REFRESH_TOKEN: "/auth/refresh-token",
+  },
   STUDENTS: {
     LIST: "/students",
     CREATE: "/students",
