@@ -37,6 +37,12 @@ const mockStudents: Student[] = [
 ];
 
 export const handlers = [
+  // TESTE DE SESSÃO EXPIRADA (401):
+  // Descomente a linha abaixo para simular token expirado ao buscar estudantes
+  // http.get(`${API_BASE_URL}/students`, () => {
+  //   return HttpResponse.json({ message: "Unauthorized" }, { status: 401 });
+  // }),
+
   http.get(`${API_BASE_URL}/students`, () => {
     return HttpResponse.json(mockStudents);
   }),

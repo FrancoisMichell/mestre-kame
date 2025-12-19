@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { apiClient } from "../client";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { apiClient, setSessionExpiredCallback } from "../client";
 import { server } from "../mocks/server";
 import { http, HttpResponse } from "msw";
 
@@ -71,5 +71,56 @@ describe("API Client", () => {
     });
     expect(capturedHeaders["X-Custom-Header"]).toBe("custom-value");
     expect(capturedHeaders["Content-Type"]).toBe("application/json");
+  });
+
+  it("should call sessionExpiredCallback when receiving 401 response", async () => {
+    const mockCallback = vi.fn();
+    setSessionExpiredCallback(mockCallback);
+
+    server.use(
+      http.get("http://localhost:3000/protected", () => {
+        return HttpResponse.json({ message: "Unauthorized" }, { status: 401 });
+      }),
+    );
+
+    try {
+      await apiClient.get("/protected");
+    } catch {
+      // Expected to throw
+    }
+
+    expect(mockCallback).toHaveBeenCalledTimes(1);
+  });
+
+  it("should not call sessionExpiredCallback when receiving other error status", async () => {
+    const mockCallback = vi.fn();
+    setSessionExpiredCallback(mockCallback);
+
+    server.use(
+      http.get("http://localhost:3000/error", () => {
+        return HttpResponse.json({ message: "Server Error" }, { status: 500 });
+      }),
+    );
+
+    try {
+      await apiClient.get("/error");
+    } catch {
+      // Expected to throw
+    }
+
+    expect(mockCallback).not.toHaveBeenCalled();
+  });
+
+  it("should handle 401 response even when callback is not set", async () => {
+    setSessionExpiredCallback(() => {});
+    setSessionExpiredCallback(null as never);
+
+    server.use(
+      http.get("http://localhost:3000/protected", () => {
+        return HttpResponse.json({ message: "Unauthorized" }, { status: 401 });
+      }),
+    );
+
+    await expect(apiClient.get("/protected")).rejects.toThrow();
   });
 });

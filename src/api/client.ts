@@ -9,6 +9,12 @@ export const apiClient = axios.create({
   },
 });
 
+let sessionExpiredCallback: (() => void) | null = null;
+
+export const setSessionExpiredCallback = (callback: () => void) => {
+  sessionExpiredCallback = callback;
+};
+
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem("authToken");
   if (token) {
@@ -21,6 +27,13 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     console.log("API Error:", error.response || error.message);
+
+    if (error.response && error.response.status === 401) {
+      if (sessionExpiredCallback) {
+        sessionExpiredCallback();
+      }
+    }
+
     throw error;
   },
 );

@@ -10,12 +10,16 @@ const Login: React.FC = () => {
     password: "",
   });
   const [error, setError] = useState<string>("");
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, sessionExpiredMessage } = useAuth();
   const navigate = useNavigate();
+
+  // A mensagem de erro exibida é sessionExpiredMessage ou erro local
+  const displayError = sessionExpiredMessage || error;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setCredentials((prev) => ({ ...prev, [name]: value }));
+    // Limpar erro local quando o usuário começa a digitar
     if (error) setError("");
   };
 
@@ -88,9 +92,15 @@ const Login: React.FC = () => {
           </div>
 
           {/* Error Message */}
-          {error && (
-            <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-              <p className="text-sm">{error}</p>
+          {displayError && (
+            <div
+              className={`mb-4 border px-4 py-3 rounded ${
+                sessionExpiredMessage
+                  ? "bg-yellow-100 border-yellow-400 text-yellow-800"
+                  : "bg-red-100 border-red-400 text-red-700"
+              }`}
+            >
+              <p className="text-sm">{displayError}</p>
             </div>
           )}
 

@@ -16,4 +16,6 @@ export interface AuthContextType {
   isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => void;
+  handleSessionExpired: () => void;
+  sessionExpiredMessage: string | null;
 }

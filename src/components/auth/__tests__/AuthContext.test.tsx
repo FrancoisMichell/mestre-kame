@@ -152,4 +152,97 @@ describe("AuthContext", () => {
       renderHook(() => useAuth());
     }).toThrow("useAuth must be used within an AuthProvider");
   });
+
+  it("should handle session expiration and set message", async () => {
+    const mockUser = {
+      id: "1",
+      name: "João Silva",
+      username: "joao123",
+      role: "student" as const,
+    };
+
+    localStorage.setItem("authToken", "mock-token");
+    localStorage.setItem("user", JSON.stringify(mockUser));
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+      expect(result.current.isAuthenticated).toBe(true);
+    });
+
+    result.current.handleSessionExpired();
+
+    await waitFor(() => {
+      expect(result.current.user).toBeNull();
+      expect(result.current.isAuthenticated).toBe(false);
+      expect(result.current.sessionExpiredMessage).toBe(
+        "Sua sessão expirou. Por favor, faça login novamente.",
+      );
+    });
+
+    expect(localStorage.getItem("authToken")).toBeNull();
+    expect(localStorage.getItem("user")).toBeNull();
+  });
+
+  it("should clear session expired message on successful login", async () => {
+    const mockUser = {
+      id: "1",
+      name: "João Silva",
+      username: "joao123",
+      role: "student" as const,
+    };
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Simular sessão expirada
+    result.current.handleSessionExpired();
+
+    await waitFor(() => {
+      expect(result.current.sessionExpiredMessage).not.toBeNull();
+    });
+
+    // Fazer login com sucesso
+    const mockResponse = {
+      data: {
+        token: "new-token",
+        user: mockUser,
+      },
+    };
+
+    vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+
+    await result.current.login({ username: "joao123", password: "senha123" });
+
+    await waitFor(() => {
+      expect(result.current.sessionExpiredMessage).toBeNull();
+      expect(result.current.isAuthenticated).toBe(true);
+    });
+  });
+
+  it("should clear session expired message on logout", async () => {
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Simular sessão expirada
+    result.current.handleSessionExpired();
+
+    await waitFor(() => {
+      expect(result.current.sessionExpiredMessage).not.toBeNull();
+    });
+
+    // Fazer logout
+    result.current.logout();
+
+    await waitFor(() => {
+      expect(result.current.sessionExpiredMessage).toBeNull();
+    });
+  });
 });

@@ -34,6 +34,8 @@ describe("Login", () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
+    // Resetar os mocks para evitar que sessionExpiredMessage persista
+    vi.resetModules();
   });
 
   it("should render login form", () => {

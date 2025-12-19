@@ -14,6 +14,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [sessionExpiredMessage, setSessionExpiredMessage] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     const checkAuth = () => {
@@ -37,6 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (credentials: LoginCredentials) => {
     try {
       setIsLoading(true);
+      setSessionExpiredMessage(null);
       const response = await apiClient.post(ENDPOINTS.AUTH.LOGIN, credentials);
       const { token, user: userData } = response.data;
 
@@ -55,11 +59,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
     setUser(null);
+    setSessionExpiredMessage(null);
+  };
+
+  const handleSessionExpired = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    setUser(null);
+    setSessionExpiredMessage(
+      "Sua sessão expirou. Por favor, faça login novamente.",
+    );
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, isAuthenticated: !!user, isLoading, login, logout }}
+      value={{
+        user,
+        isAuthenticated: !!user,
+        isLoading,
+        login,
+        logout,
+        handleSessionExpired,
+        sessionExpiredMessage,
+      }}
     >
       {children}
     </AuthContext.Provider>
