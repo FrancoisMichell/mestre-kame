@@ -1,10 +1,17 @@
-export type Belt = "branca" | "amarela" | "laranja" | "verde" | "azul" | "marrom" | "preta";
+export type Belt =
+  | "White"
+  | "Yellow"
+  | "Orange"
+  | "Green"
+  | "Blue"
+  | "Brown"
+  | "Black";
 
 export interface Student {
   id: string;
   name: string;
   birthday: string | null;
-  email: string;
+  registry: string;
   isActive: boolean;
   belt: Belt;
   trainingSince: string | null;
@@ -19,10 +26,10 @@ export interface StudentCardProps {
 // Forms typically don't provide `color` (derived from `belt`) nor `isActive`.
 // NewStudentInput: used by forms. Dates are represented as strings in inputs,
 // so we override `birthday` and `trainingSince` to be `string` instead of `string | null`.
-export type NewStudent = Omit<
-  Student,
-  'color' | 'isActive' | 'birthday' | 'trainingSince'
-> & {
-  birthday: string;
-  trainingSince: string;
+export type NewStudent = {
+  name: string;
+  registry?: string;
+  belt: Belt;
+  birthday?: string;
+  trainingSince?: string;
 };

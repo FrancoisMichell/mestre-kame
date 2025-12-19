@@ -1,15 +1,29 @@
 import type { Belt } from "./StudentTypes";
 
 const beltColorMap: Record<Belt, string> = {
-  'branca': '#e5e7eb', // Cinza claro (quase branco, para contraste)
-  'amarela': '#facc15', // Amarelo 500
-  'laranja': '#fb923c', // Laranja 400
-  'verde': '#16a34a', // Verde 600
-  'azul': '#2563eb', // Azul 600
-  'marrom': '#78350f', // Marrom/Âmbar escuro 800
-  'preta': '#1f2937', // Cinza escuro/Quase preto 800
+  White: "#e5e7eb", // Cinza claro (quase branco, para contraste)
+  Yellow: "#facc15", // Amarelo 500
+  Orange: "#fb923c", // Laranja 400
+  Green: "#16a34a", // Verde 600
+  Blue: "#2563eb", // Azul 600
+  Brown: "#78350f", // Marrom/Âmbar escuro 800
+  Black: "#1f2937", // Cinza escuro/Quase preto 800
 };
 
 export const getBeltColor = (belt: Belt): string => {
-  return beltColorMap[belt] || beltColorMap['branca'];
+  return beltColorMap[belt] || beltColorMap["White"];
+};
+
+const beltNameMap: Record<Belt, string> = {
+  White: "Branca",
+  Yellow: "Amarela",
+  Orange: "Laranja",
+  Green: "Verde",
+  Blue: "Azul",
+  Brown: "Marrom",
+  Black: "Preta",
+};
+
+export const getBeltName = (belt: Belt): string => {
+  return beltNameMap[belt] || beltNameMap["White"];
 };

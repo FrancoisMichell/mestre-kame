@@ -14,7 +14,6 @@ vi.mock("../StudentContext", () => ({
 }));
 
 import RegisterForm from "../StudentRegisterForm";
-import { getBeltColor } from "../StudentUtils";
 
 describe("StudentRegisterForm", () => {
   beforeEach(() => {
@@ -32,19 +31,17 @@ describe("StudentRegisterForm", () => {
     render(<RegisterForm />);
 
     const name = screen.getByLabelText(/nome completo/i);
-    const id = screen.getByLabelText(/matrícula/i);
-    const email = screen.getByLabelText(/email/i);
+    const registry = screen.getByLabelText(/matrícula/i);
     const birthday = screen.getByLabelText(/data de nascimento/i);
     const trainingSince = screen.getByLabelText(/treinando desde/i);
     const belt = screen.getByLabelText(/faixa/i);
     const submit = screen.getByRole("button", { name: /cadastrar aluno/i });
 
     await userEvent.type(name, "Aluno Test");
-    await userEvent.type(id, "2025001");
-    await userEvent.type(email, "a@test.com");
+    await userEvent.type(registry, "2025001");
     await userEvent.type(birthday, "2000-01-02");
     await userEvent.type(trainingSince, "2022-01-01");
-    await userEvent.selectOptions(belt, "branca");
+    await userEvent.selectOptions(belt, "White");
 
     await userEvent.click(submit);
 
@@ -53,8 +50,10 @@ describe("StudentRegisterForm", () => {
     type ViMockShape = { mock: { calls: unknown[][] } };
     const typedMock = addStudentMock as unknown as ViMockShape;
     const calledWith = typedMock.mock.calls[0][0] as Record<string, unknown>;
-    expect(calledWith).toHaveProperty("color", getBeltColor("branca"));
-    expect(calledWith).toHaveProperty("isActive", true);
+    expect(calledWith).toHaveProperty("belt", "White");
     expect(calledWith).toHaveProperty("name", "Aluno Test");
+    expect(calledWith).toHaveProperty("registry", "2025001");
+    expect(calledWith).toHaveProperty("birthday", "2000-01-02");
+    expect(calledWith).toHaveProperty("trainingSince", "2022-01-01");
   });
 });

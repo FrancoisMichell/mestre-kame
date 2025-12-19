@@ -3,17 +3,21 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import type { Belt, Student, NewStudent } from "./StudentTypes";
 import { useNavigate } from "react-router-dom";
 import { useStudents } from "./StudentContext";
-import { getBeltColor } from "./StudentUtils";
+import { getBeltName } from "./StudentUtils";
 
-const beltOptions: Belt[] = ['branca', 'amarela', 'laranja', 'verde', 'azul', 'marrom', 'preta'];
+const beltOptions: Belt[] = [
+  "White",
+  "Yellow",
+  "Orange",
+  "Green",
+  "Blue",
+  "Brown",
+  "Black",
+];
 
 const initialFormData: NewStudent = {
-  id: "",
   name: "",
-  birthday: "",
-  email: "",
-  trainingSince: "",
-  belt: "branca",
+  belt: "White",
 };
 
 const RegisterForm: React.FC = () => {
@@ -21,7 +25,9 @@ const RegisterForm: React.FC = () => {
   const { addStudent } = useStudents();
   const navigate = useNavigate();
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -32,11 +38,13 @@ const RegisterForm: React.FC = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const finalStudentData: Student = {
-      ...formData,
-      id: formData.id || Date.now().toString(),
-      isActive: true,
-      color: getBeltColor(formData.belt),
-    };
+      name: formData.name,
+      registry: formData.registry,
+      belt: formData.belt,
+      birthday: formData.birthday,
+      trainingSince:
+        formData.trainingSince || new Date().toISOString().split("T")[0],
+    } as Student;
     addStudent(finalStudentData);
 
     setFormData(initialFormData);
@@ -73,43 +81,22 @@ const RegisterForm: React.FC = () => {
             placeholder="Ex: João das Neves"
           />
         </div>
-        {/* Matrícula (ID) */}
+        {/* Matrícula */}
         <div className="mb-5">
           <label
-            htmlFor="id"
+            htmlFor="registry"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Matrícula (ID)
+            Matrícula
           </label>
           <input
             type="text"
-            id="id"
-            name="id"
-            value={formData.id}
+            id="registry"
+            name="registry"
+            value={formData.registry}
             onChange={handleChange}
-            required
             className="text-gray-900 w-full border border-gray-300 p-3 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
-            placeholder="Ex: 2024010"
-          />
-        </div>
-
-        {/* Email */}
-        <div className="mb-5">
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="text-gray-900 w-full border border-gray-300 p-3 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
-            placeholder="exemplo@academia.com"
+            placeholder="00PE003920"
           />
         </div>
 
@@ -128,7 +115,6 @@ const RegisterForm: React.FC = () => {
               name="birthday"
               value={formData.birthday}
               onChange={handleChange}
-              required
               className="text-gray-900 w-full border border-gray-300 p-3 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
             />
           </div>
@@ -145,7 +131,6 @@ const RegisterForm: React.FC = () => {
               name="trainingSince"
               value={formData.trainingSince}
               onChange={handleChange}
-              required
               className="text-gray-900 w-full border border-gray-300 p-3 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
             />
           </div>
@@ -155,7 +140,10 @@ const RegisterForm: React.FC = () => {
         <div className="mb-5">
           <label
             htmlFor="belt"
-            className="block text-sm font-medium text-gray-700 mb-1">Faixa</label>
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Faixa
+          </label>
           <select
             id="belt"
             name="belt"
@@ -166,7 +154,8 @@ const RegisterForm: React.FC = () => {
           >
             {beltOptions.map((belt) => (
               <option key={belt} value={belt}>
-                {belt.charAt(0).toUpperCase() + belt.slice(1)}
+                {getBeltName(belt).charAt(0).toUpperCase() +
+                  getBeltName(belt).slice(1)}
               </option>
             ))}
           </select>

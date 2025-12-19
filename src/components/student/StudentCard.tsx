@@ -1,6 +1,6 @@
 import React from "react";
 import type { StudentCardProps } from "./StudentTypes";
-import { getBeltColor } from "./StudentUtils";
+import { getBeltColor, getBeltName } from "./StudentUtils";
 
 const formatDate = (dateString: string | null) => {
   if (!dateString) return "";
@@ -10,7 +10,7 @@ const formatDate = (dateString: string | null) => {
 };
 
 const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
-  const { name, id, birthday, isActive, trainingSince, belt } = student;
+  const { name, registry, birthday, isActive, trainingSince, belt } = student;
   const beltColor = getBeltColor(belt);
 
   // Classes condicionais para Status
@@ -37,7 +37,7 @@ const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
         <div className="min-w-0">
           <div>
             <h3 className="text-lg font-bold text-gray-800 truncate">
-              {name} - {id}
+              {name} - {registry}
             </h3>
             <p className="text-sm text-gray-500 mt-0.5">
               <span className="font-semibold mr-1">Faixa:</span>
@@ -49,18 +49,18 @@ const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
                 }}
                 className="mr-3"
               >
-                {belt}
+                {getBeltName(belt)}
               </span>
             </p>
           </div>
           <p className="text-sm text-gray-500 mt-0.5">
             <strong className="font-semibold">Aniversário:</strong>{" "}
-            {formatDate(birthday)}
+            {birthday ? formatDate(birthday) : "N/A"}
           </p>
 
           <p className="text-sm text-gray-500 mt-0.5">
             <strong className="font-semibold"> Treina desde:</strong>{" "}
-            {formatDate(trainingSince)}
+            {trainingSince ? formatDate(trainingSince) : "N/A"}
           </p>
         </div>
       </div>

@@ -1,12 +1,13 @@
 import useSWR from "swr";
 import type { Student } from "../components/student/StudentTypes";
 import apiClient from "./client";
+import { ENDPOINTS } from "./endpoints";
 
 const fetcher = (url: string) => apiClient.get(url).then(({ data }) => data);
 
 export const useFetchStudents = () => {
   const { data, error, isLoading, mutate } = useSWR<Student[]>(
-    "/students",
+    ENDPOINTS.STUDENTS.LIST,
     fetcher,
     { revalidateOnFocus: false, dedupingInterval: 60000 },
   );
@@ -21,7 +22,7 @@ export const useFetchStudents = () => {
 
 export const useAddStudent = () => {
   return async (student: Student) => {
-    const response = await apiClient.post("/students", student);
+    const response = await apiClient.post(ENDPOINTS.STUDENTS.CREATE, student);
     return response.data;
   };
 };

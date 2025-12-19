@@ -5,3 +5,7 @@
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 }
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  @apply bg-blue-600 text-white border rounded-md p-2;
+}

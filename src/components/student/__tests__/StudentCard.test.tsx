@@ -8,9 +8,9 @@ describe("StudentCard", () => {
     id: "2023001",
     name: "João Silva",
     birthday: "2000-05-15",
-    email: "joao@example.com",
+    registry: "321123",
     isActive: true,
-    belt: "azul",
+    belt: "Blue",
     trainingSince: "2022-01-10",
     color: "#2563eb",
   };
@@ -19,18 +19,18 @@ describe("StudentCard", () => {
     id: "2023002",
     name: "Maria Santos",
     birthday: "1998-03-20",
-    email: "maria@example.com",
+    registry: "654321",
     isActive: false,
-    belt: "verde",
+    belt: "Green",
     trainingSince: "2021-06-15",
     color: "#16a34a",
   };
 
-  it("renders student name and id", () => {
+  it("renders student name and registry", () => {
     render(<StudentCard student={mockActiveStudent} />);
 
     expect(screen.getByText(/joão silva/i)).toBeDefined();
-    expect(screen.getByText(/2023001/i)).toBeDefined();
+    expect(screen.getByText(/321123/i)).toBeDefined();
   });
 
   it("displays belt information", () => {
@@ -74,7 +74,7 @@ describe("StudentCard", () => {
     ) as HTMLImageElement;
     expect(avatar).toBeDefined();
     expect(avatar.src).toContain("ui-avatars.com");
-    expect(avatar.src).toContain("name=Jo");
+    expect(avatar.src).toContain("Silva");
   });
 
   it("applies correct border color based on belt", () => {
@@ -82,7 +82,11 @@ describe("StudentCard", () => {
 
     const card = container.firstChild as HTMLElement;
     expect(card).toBeDefined();
-    expect(card.style.borderLeftColor).toBe("#2563eb");
+    // Navegadores podem retornar hexadecimal ou RGB
+    const borderColor = card.style.borderLeftColor;
+    expect(
+      borderColor === "#2563eb" || borderColor === "rgb(37, 99, 235)",
+    ).toBe(true);
   });
 
   it("applies green background for active status", () => {
@@ -109,8 +113,8 @@ describe("StudentCard", () => {
 
     render(<StudentCard student={studentWithNullBirthday} />);
 
-    // Verifica que renderiza sem erro
     expect(screen.getByText(/joão silva/i)).toBeDefined();
+    expect(screen.getByText(/n\/a/i)).toBeDefined();
   });
 
   it("handles null trainingSince gracefully", () => {
@@ -121,8 +125,8 @@ describe("StudentCard", () => {
 
     render(<StudentCard student={studentWithNullTraining} />);
 
-    // Verifica que renderiza sem erro
     expect(screen.getByText(/joão silva/i)).toBeDefined();
+    expect(screen.getByText(/n\/a/i)).toBeDefined();
   });
 
   it("displays belt color with correct styling", () => {
@@ -131,10 +135,32 @@ describe("StudentCard", () => {
     const beltText = screen.getByText(/azul/i);
     expect(beltText).toBeDefined();
 
-    // Verifica que tem estilo inline com a cor
     const styledElement = beltText as HTMLElement;
-    expect(styledElement.style.color).toBe("#2563eb");
+    // Navegadores podem retornar hexadecimal ou RGB
+    const color = styledElement.style.color;
+    expect(color === "#2563eb" || color === "rgb(37, 99, 235)").toBe(true);
     expect(styledElement.style.fontWeight).toBe("bold");
     expect(styledElement.style.textTransform).toBe("capitalize");
+  });
+
+  it("displays all belt names correctly in Portuguese", () => {
+    const belts: Array<{ belt: Student["belt"]; name: string }> = [
+      { belt: "White", name: "branca" },
+      { belt: "Yellow", name: "amarela" },
+      { belt: "Orange", name: "laranja" },
+      { belt: "Green", name: "verde" },
+      { belt: "Blue", name: "azul" },
+      { belt: "Brown", name: "marrom" },
+      { belt: "Black", name: "preta" },
+    ];
+
+    belts.forEach(({ belt, name }) => {
+      const student = { ...mockActiveStudent, belt };
+      const { unmount } = render(<StudentCard student={student} />);
+
+      expect(screen.getByText(new RegExp(name, "i"))).toBeDefined();
+
+      unmount();
+    });
   });
 });
