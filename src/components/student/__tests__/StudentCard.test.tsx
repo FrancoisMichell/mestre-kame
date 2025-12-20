@@ -1,7 +1,23 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { BrowserRouter } from "react-router-dom";
 import StudentCard from "../StudentCard";
 import type { Student } from "../StudentTypes";
+
+const mockNavigate = vi.fn();
+
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+const renderWithRouter = (component: React.ReactElement) => {
+  return render(<BrowserRouter>{component}</BrowserRouter>);
+};
 
 describe("StudentCard", () => {
   const mockActiveStudent: Student = {
@@ -26,48 +42,52 @@ describe("StudentCard", () => {
     color: "#16a34a",
   };
 
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("renders student name and registry", () => {
-    render(<StudentCard student={mockActiveStudent} />);
+    renderWithRouter(<StudentCard student={mockActiveStudent} />);
 
     expect(screen.getByText(/joão silva/i)).toBeDefined();
     expect(screen.getByText(/321123/i)).toBeDefined();
   });
 
   it("displays belt information", () => {
-    render(<StudentCard student={mockActiveStudent} />);
+    renderWithRouter(<StudentCard student={mockActiveStudent} />);
 
     expect(screen.getByText(/faixa:/i)).toBeDefined();
     expect(screen.getByText(/azul/i)).toBeDefined();
   });
 
   it("displays birthday in Brazilian format", () => {
-    render(<StudentCard student={mockActiveStudent} />);
+    renderWithRouter(<StudentCard student={mockActiveStudent} />);
 
     expect(screen.getByText(/aniversário:/i)).toBeDefined();
     expect(screen.getByText(/15\/05\/2000/i)).toBeDefined();
   });
 
   it("displays training start date in Brazilian format", () => {
-    render(<StudentCard student={mockActiveStudent} />);
+    renderWithRouter(<StudentCard student={mockActiveStudent} />);
 
     expect(screen.getByText(/treina desde:/i)).toBeDefined();
     expect(screen.getByText(/10\/01\/2022/i)).toBeDefined();
   });
 
   it('shows "Ativo" status for active students', () => {
-    render(<StudentCard student={mockActiveStudent} />);
+    renderWithRouter(<StudentCard student={mockActiveStudent} />);
 
     expect(screen.getByText(/ativo/i)).toBeDefined();
   });
 
   it('shows "Inativo" status for inactive students', () => {
-    render(<StudentCard student={mockInactiveStudent} />);
+    renderWithRouter(<StudentCard student={mockInactiveStudent} />);
 
     expect(screen.getByText(/inativo/i)).toBeDefined();
   });
 
   it("renders avatar image with correct src", () => {
-    render(<StudentCard student={mockActiveStudent} />);
+    renderWithRouter(<StudentCard student={mockActiveStudent} />);
 
     const avatar = screen.getByAltText(
       /foto de joão silva/i,
@@ -78,7 +98,9 @@ describe("StudentCard", () => {
   });
 
   it("applies correct border color based on belt", () => {
-    const { container } = render(<StudentCard student={mockActiveStudent} />);
+    const { container } = renderWithRouter(
+      <StudentCard student={mockActiveStudent} />,
+    );
 
     const card = container.firstChild as HTMLElement;
     expect(card).toBeDefined();
@@ -90,7 +112,7 @@ describe("StudentCard", () => {
   });
 
   it("applies green background for active status", () => {
-    render(<StudentCard student={mockActiveStudent} />);
+    renderWithRouter(<StudentCard student={mockActiveStudent} />);
 
     const statusBadge = screen.getByText(/ativo/i);
     expect(statusBadge.className).toContain("bg-green-100");
@@ -98,7 +120,7 @@ describe("StudentCard", () => {
   });
 
   it("applies red background for inactive status", () => {
-    render(<StudentCard student={mockInactiveStudent} />);
+    renderWithRouter(<StudentCard student={mockInactiveStudent} />);
 
     const statusBadge = screen.getByText(/inativo/i);
     expect(statusBadge.className).toContain("bg-red-100");
@@ -111,7 +133,7 @@ describe("StudentCard", () => {
       birthday: null,
     };
 
-    render(<StudentCard student={studentWithNullBirthday} />);
+    renderWithRouter(<StudentCard student={studentWithNullBirthday} />);
 
     expect(screen.getByText(/joão silva/i)).toBeDefined();
     expect(screen.getByText(/n\/a/i)).toBeDefined();
@@ -123,14 +145,14 @@ describe("StudentCard", () => {
       trainingSince: null,
     };
 
-    render(<StudentCard student={studentWithNullTraining} />);
+    renderWithRouter(<StudentCard student={studentWithNullTraining} />);
 
     expect(screen.getByText(/joão silva/i)).toBeDefined();
     expect(screen.getByText(/n\/a/i)).toBeDefined();
   });
 
   it("displays belt color with correct styling", () => {
-    render(<StudentCard student={mockActiveStudent} />);
+    renderWithRouter(<StudentCard student={mockActiveStudent} />);
 
     const beltText = screen.getByText(/azul/i);
     expect(beltText).toBeDefined();
@@ -156,11 +178,34 @@ describe("StudentCard", () => {
 
     belts.forEach(({ belt, name }) => {
       const student = { ...mockActiveStudent, belt };
-      const { unmount } = render(<StudentCard student={student} />);
+      const { unmount } = renderWithRouter(<StudentCard student={student} />);
 
       expect(screen.getByText(new RegExp(name, "i"))).toBeDefined();
 
       unmount();
     });
+  });
+
+  it("navigates to edit page when clicked", async () => {
+    const user = userEvent.setup();
+    renderWithRouter(<StudentCard student={mockActiveStudent} />);
+
+    const card = screen.getByText(/joão silva/i).closest("div");
+    expect(card).toBeDefined();
+
+    if (card) {
+      await user.click(card);
+      expect(mockNavigate).toHaveBeenCalledWith("/aluno/2023001");
+    }
+  });
+
+  it("is clickable with hover effects", () => {
+    const { container } = renderWithRouter(
+      <StudentCard student={mockActiveStudent} />,
+    );
+
+    const card = container.firstChild as HTMLElement;
+    expect(card.className).toContain("hover:-translate-y-0.5");
+    expect(card.className).toContain("hover:shadow-lg");
   });
 });

@@ -1,19 +1,9 @@
 import type React from "react";
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import type { Belt, Student, NewStudent } from "./StudentTypes";
+import { type Student, type NewStudent } from "./StudentTypes";
 import { useNavigate } from "react-router-dom";
 import { useStudents } from "./StudentContext";
-import { getBeltName } from "./StudentUtils";
-
-const beltOptions: Belt[] = [
-  "White",
-  "Yellow",
-  "Orange",
-  "Green",
-  "Blue",
-  "Brown",
-  "Black",
-];
+import { beltOptions, getBeltName } from "./StudentUtils";
 
 const initialFormData: NewStudent = {
   name: "",
@@ -154,8 +144,7 @@ const RegisterForm: React.FC = () => {
           >
             {beltOptions.map((belt) => (
               <option key={belt} value={belt}>
-                {getBeltName(belt).charAt(0).toUpperCase() +
-                  getBeltName(belt).slice(1)}
+                {getBeltName(belt)}
               </option>
             ))}
           </select>

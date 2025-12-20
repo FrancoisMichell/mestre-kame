@@ -53,6 +53,7 @@ describe("Home", () => {
       isLoading: false,
       error: undefined,
       addStudent: vi.fn(),
+      refreshStudents: vi.fn(),
     });
 
     renderHome();
@@ -65,6 +66,7 @@ describe("Home", () => {
       isLoading: true,
       error: undefined,
       addStudent: vi.fn(),
+      refreshStudents: vi.fn(),
     });
 
     const { container } = renderHome();
@@ -87,6 +89,7 @@ describe("Home", () => {
       isLoading: false,
       error: mockError,
       addStudent: vi.fn(),
+      refreshStudents: vi.fn(),
     });
 
     renderHome();
@@ -101,6 +104,7 @@ describe("Home", () => {
       isLoading: false,
       error: {} as Error,
       addStudent: vi.fn(),
+      refreshStudents: vi.fn(),
     });
 
     renderHome();
@@ -115,6 +119,7 @@ describe("Home", () => {
       isLoading: false,
       error: undefined,
       addStudent: vi.fn(),
+      refreshStudents: vi.fn(),
     });
 
     renderHome();
@@ -127,6 +132,7 @@ describe("Home", () => {
       isLoading: false,
       error: undefined,
       addStudent: vi.fn(),
+      refreshStudents: vi.fn(),
     });
 
     renderHome();
@@ -142,6 +148,7 @@ describe("Home", () => {
       isLoading: false,
       error: undefined,
       addStudent: vi.fn(),
+      refreshStudents: vi.fn(),
     });
 
     renderHome();
@@ -157,6 +164,7 @@ describe("Home", () => {
       isLoading: false,
       error: undefined,
       addStudent: vi.fn(),
+      refreshStudents: vi.fn(),
     });
 
     const { container } = renderHome();
@@ -176,6 +184,7 @@ describe("Home", () => {
       isLoading: false,
       error: undefined,
       addStudent: vi.fn(),
+      refreshStudents: vi.fn(),
     });
 
     const { container } = renderHome();
@@ -198,6 +207,7 @@ describe("Home", () => {
       isLoading: false,
       error: undefined,
       addStudent: vi.fn(),
+      refreshStudents: vi.fn(),
     });
 
     renderHome();

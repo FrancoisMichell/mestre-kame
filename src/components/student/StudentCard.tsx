@@ -1,6 +1,7 @@
 import React from "react";
 import type { StudentCardProps } from "./StudentTypes";
 import { getBeltColor, getBeltName } from "./StudentUtils";
+import { useNavigate } from "react-router-dom";
 
 const formatDate = (dateString: string | null) => {
   if (!dateString) return "";
@@ -12,6 +13,7 @@ const formatDate = (dateString: string | null) => {
 const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
   const { name, registry, birthday, isActive, trainingSince, belt } = student;
   const beltColor = getBeltColor(belt);
+  const navigate = useNavigate();
 
   // Classes condicionais para Status
   const statusClasses = isActive
@@ -20,6 +22,7 @@ const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
 
   return (
     <div
+      onClick={() => navigate(`/aluno/${student.id}`)}
       className="flex items-center justify-between bg-white rounded-xl shadow-md p-4 pr-6 
                  border-l-4 border-solid transition-transform duration-200 
                  hover:-translate-y-0.5 hover:shadow-lg"

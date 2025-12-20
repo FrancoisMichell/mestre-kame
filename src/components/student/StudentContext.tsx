@@ -5,6 +5,7 @@ import { useFetchStudents, useAddStudent } from "../../api/hooks";
 interface StudentContextType {
   students: Student[];
   addStudent: (student: Student) => Promise<void>;
+  refreshStudents: () => Promise<void>;
   isLoading: boolean;
   error?: Error;
 }
@@ -35,9 +36,19 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const refreshStudents = async () => {
+    await mutate();
+  };
+
   return (
     <StudentContext.Provider
-      value={{ students: apiStudents ?? [], addStudent, isLoading, error }}
+      value={{
+        students: apiStudents ?? [],
+        addStudent,
+        refreshStudents,
+        isLoading,
+        error,
+      }}
     >
       {children}
     </StudentContext.Provider>

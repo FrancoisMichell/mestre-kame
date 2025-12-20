@@ -1,5 +1,15 @@
 import type { Belt } from "./StudentTypes";
 
+export const beltOptions: Belt[] = [
+  "White",
+  "Yellow",
+  "Orange",
+  "Green",
+  "Blue",
+  "Brown",
+  "Black",
+];
+
 const beltColorMap: Record<Belt, string> = {
   White: "#e5e7eb", // Cinza claro (quase branco, para contraste)
   Yellow: "#facc15", // Amarelo 500

@@ -8,6 +8,7 @@ import { useEffect, type ReactNode } from "react";
 import { AuthProvider, useAuth } from "./components/auth/AuthContext";
 import Login from "./pages/Login";
 import { setSessionExpiredCallback } from "./api/client";
+import StudentEdit from "./components/student/StudentEdit";
 
 const ProtectedRoute: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -42,6 +43,7 @@ const AppRoutes: React.FC = () => {
               <Routes>
                 <Route element={<Home />} path="/" />
                 <Route element={<RegisterForm />} path="/cadastro" />
+                <Route element={<StudentEdit />} path="/aluno/:id" />
                 <Route
                   element={<h1>404 | Página não encontrada</h1>}
                   path="*"

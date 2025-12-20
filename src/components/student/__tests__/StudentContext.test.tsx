@@ -201,4 +201,26 @@ describe("StudentContext", () => {
       renderHook(() => useStudents());
     }).toThrow("useStudents must be used within a StudentProvider");
   });
+
+  it("should refresh students list when refreshStudents is called", async () => {
+    const mockMutate = vi.fn().mockResolvedValue(undefined);
+
+    vi.mocked(useFetchStudents).mockReturnValue({
+      students: mockStudents,
+      isLoading: false,
+      isError: false,
+      error: undefined,
+      mutate: mockMutate,
+    });
+
+    vi.mocked(useAddStudent).mockReturnValue(vi.fn());
+
+    const { result } = renderHook(() => useStudents(), { wrapper });
+
+    await act(async () => {
+      await result.current.refreshStudents();
+    });
+
+    expect(mockMutate).toHaveBeenCalled();
+  });
 });
