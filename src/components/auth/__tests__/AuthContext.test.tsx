@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { renderHook, waitFor } from "@testing-library/react";
+import { renderHook, waitFor, render } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { AuthProvider, useAuth } from "../AuthContext";
 import apiClient from "../../../api/client";
@@ -243,6 +243,93 @@ describe("AuthContext", () => {
 
     await waitFor(() => {
       expect(result.current.sessionExpiredMessage).toBeNull();
+    });
+  });
+
+  describe("Memory Leak Prevention", () => {
+    it("should keep stable callback references", async () => {
+      const { result, rerender } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      const firstLogin = result.current.login;
+      const firstLogout = result.current.logout;
+      const firstHandleSessionExpired = result.current.handleSessionExpired;
+
+      // Force re-render
+      rerender();
+
+      const secondLogin = result.current.login;
+      const secondLogout = result.current.logout;
+      const secondHandleSessionExpired = result.current.handleSessionExpired;
+
+      // All callbacks should maintain the same reference
+      expect(firstLogin).toBe(secondLogin);
+      expect(firstLogout).toBe(secondLogout);
+      expect(firstHandleSessionExpired).toBe(secondHandleSessionExpired);
+    });
+
+    it("should memoize context value properly", async () => {
+      let renderCount = 0;
+      const TestComponent = () => {
+        const auth = useAuth();
+        renderCount++;
+        return <div>{auth.isAuthenticated ? "yes" : "no"}</div>;
+      };
+
+      render(
+        <AuthProvider>
+          <TestComponent />
+        </AuthProvider>,
+      );
+
+      await waitFor(() => {
+        expect(renderCount).toBeGreaterThan(0);
+      });
+
+      // Context value is memoized, so renders should be minimal
+      // Initial render + loading state change = 2 renders max
+      expect(renderCount).toBeLessThanOrEqual(2);
+    });
+
+    it("should only update callbacks when dependencies change", async () => {
+      const mockUser = {
+        id: "1",
+        name: "João Silva",
+        username: "joao123",
+        role: "student" as const,
+      };
+
+      const mockResponse = {
+        data: {
+          token: "mock-jwt-token",
+          user: mockUser,
+        },
+      };
+
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+
+      const { result, rerender } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      const loginBeforeChange = result.current.login;
+
+      // Login (changes user state)
+      await result.current.login({ username: "joao123", password: "senha123" });
+
+      await waitFor(() => {
+        expect(result.current.isAuthenticated).toBe(true);
+      });
+
+      rerender();
+
+      // login callback should still be the same reference (no dependencies)
+      expect(result.current.login).toBe(loginBeforeChange);
     });
   });
 });

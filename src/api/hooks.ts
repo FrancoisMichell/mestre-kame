@@ -25,8 +25,9 @@ export const useFetchStudents = (params?: UseFetchStudentsParams) => {
     fetcher,
     {
       revalidateOnFocus: false,
-      dedupingInterval: 2000, // Reduzido para 2s para permitir mudanças de página
-      keepPreviousData: true, // Mantém dados anteriores enquanto carrega novos
+      dedupingInterval: 5000, // 5s para evitar requisições duplicadas
+      keepPreviousData: true, // Mantém dados anteriores durante transição
+      revalidateOnMount: true, // Sempre valida ao montar
     },
   );
   return {

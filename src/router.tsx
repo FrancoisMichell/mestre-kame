@@ -29,6 +29,11 @@ const AppRoutes: React.FC = () => {
 
   useEffect(() => {
     setSessionExpiredCallback(handleSessionExpired);
+
+    // Cleanup: remove callback quando componente desmontar
+    return () => {
+      setSessionExpiredCallback(() => {});
+    };
   }, [handleSessionExpired]);
 
   return (
