@@ -71,7 +71,7 @@ describe("LRUCache", () => {
     cache.set("key2", "value2");
     cache.set("key3", "value3");
 
-    const keys = cache.keys();
+    const keys = Array.from(cache.keys());
 
     expect(keys).toHaveLength(3);
     expect(keys).toContain("key1");
