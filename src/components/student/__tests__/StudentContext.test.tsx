@@ -48,6 +48,7 @@ describe("StudentContext", () => {
 
     vi.mocked(useFetchStudents).mockReturnValue({
       students: mockStudents,
+      meta: undefined,
       isLoading: false,
       isError: false,
       error: undefined,
@@ -68,6 +69,7 @@ describe("StudentContext", () => {
   it("should handle loading state", async () => {
     vi.mocked(useFetchStudents).mockReturnValue({
       students: [],
+      meta: undefined,
       isLoading: true,
       isError: false,
       error: undefined,
@@ -89,6 +91,7 @@ describe("StudentContext", () => {
 
     vi.mocked(useFetchStudents).mockReturnValue({
       students: [],
+      meta: undefined,
       isLoading: false,
       isError: true,
       error: mockError,
@@ -111,6 +114,7 @@ describe("StudentContext", () => {
 
     vi.mocked(useFetchStudents).mockReturnValue({
       students: mockStudents,
+      meta: undefined,
       isLoading: false,
       isError: false,
       error: undefined,
@@ -147,6 +151,7 @@ describe("StudentContext", () => {
 
     vi.mocked(useFetchStudents).mockReturnValue({
       students: mockStudents,
+      meta: undefined,
       isLoading: false,
       isError: false,
       error: undefined,
@@ -181,6 +186,7 @@ describe("StudentContext", () => {
   it("should return empty array when students is undefined", async () => {
     vi.mocked(useFetchStudents).mockReturnValue({
       students: undefined as unknown as Student[],
+      meta: undefined,
       isLoading: false,
       isError: false,
       error: undefined,
@@ -207,6 +213,7 @@ describe("StudentContext", () => {
 
     vi.mocked(useFetchStudents).mockReturnValue({
       students: mockStudents,
+      meta: undefined,
       isLoading: false,
       isError: false,
       error: undefined,

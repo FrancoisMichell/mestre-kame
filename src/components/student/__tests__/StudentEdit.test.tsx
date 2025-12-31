@@ -23,7 +23,7 @@ vi.mock("../StudentContext", async () => {
 const mockStudent: Student = {
   id: "1",
   name: "João Silva",
-  belt: "Blue",
+  belt: "blue",
   color: "#2563eb",
   birthday: "2000-05-15",
   trainingSince: "2024-01-10",
@@ -59,10 +59,15 @@ describe("StudentEdit", () => {
 
     vi.mocked(StudentContext.useStudents).mockReturnValue({
       students: [mockStudent],
+      meta: undefined,
       isLoading: false,
       error: undefined,
       addStudent: vi.fn(),
       refreshStudents: mockRefreshStudents,
+      page: 1,
+      limit: 12,
+      setPage: vi.fn(),
+      setLimit: vi.fn(),
     });
   });
 
@@ -192,7 +197,7 @@ describe("StudentEdit", () => {
         registry: "987654",
         birthday: "2000-05-15",
         trainingSince: "2024-01-10",
-        belt: "Blue",
+        belt: "blue",
         isActive: true,
       });
     });
@@ -325,7 +330,7 @@ describe("StudentEdit", () => {
         registry: "987654",
         birthday: null,
         trainingSince: null,
-        belt: "Blue",
+        belt: "blue",
         isActive: true,
       });
     });
