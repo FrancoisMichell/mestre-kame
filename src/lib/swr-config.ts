@@ -1,8 +1,10 @@
 import type { Cache } from "swr";
 
 // Cache LRU (Least Recently Used) personalizado com limite de entradas
-export class LRUCache implements Cache {
-  private cache: Map<string, unknown>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export class LRUCache implements Cache<any> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private cache: Map<string, any>;
   private maxSize: number;
 
   constructor(maxSize = 20) {
@@ -10,7 +12,8 @@ export class LRUCache implements Cache {
     this.maxSize = maxSize;
   }
 
-  get(key: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get(key: string): any {
     if (!this.cache.has(key)) return undefined;
 
     // Move para o final (mais recente)
@@ -21,7 +24,8 @@ export class LRUCache implements Cache {
     return value;
   }
 
-  set(key: string, value: unknown) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  set(key: string, value: any): void {
     // Remove se já existe para reordenar
     if (this.cache.has(key)) {
       this.cache.delete(key);
@@ -38,7 +42,7 @@ export class LRUCache implements Cache {
     this.cache.set(key, value);
   }
 
-  delete(key: string) {
+  delete(key: string): boolean {
     return this.cache.delete(key);
   }
 
