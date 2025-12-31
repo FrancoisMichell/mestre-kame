@@ -1,4 +1,10 @@
-import { createContext, useContext, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import type { Student } from "./StudentTypes";
 import type { PaginationMeta } from "../../types/api";
 import { useFetchStudents, useAddStudent } from "../../api/hooks";
@@ -34,40 +40,57 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
   // Removido localStudents, usa diretamente apiStudents
   const addStudentAPI = useAddStudent();
 
-  // Não é mais necessário sincronizar localStudents
+  const addStudent = useCallback(
+    async (newStudent: Student) => {
+      try {
+        await addStudentAPI(newStudent);
+        await mutate();
+      } catch (err) {
+        console.error("Failed to add student:", err);
+        throw err;
+      }
+    },
+    [addStudentAPI, mutate],
+  );
 
-  const addStudent = async (newStudent: Student) => {
-    try {
-      await addStudentAPI(newStudent);
-      await mutate();
-    } catch (err) {
-      console.error("Failed to add student:", err);
-      throw err;
-    }
-  };
-
-  const refreshStudents = async () => {
+  const refreshStudents = useCallback(async () => {
     await mutate();
-  };
+  }, [mutate]);
+
+  const handleSetLimit = useCallback((newLimit: number) => {
+    setLimit(newLimit);
+    setPage(1); // Reset para primeira página ao mudar o limite
+  }, []);
+
+  // Memoizar o valor do contexto para evitar re-renders desnecessários
+  const contextValue = useMemo(
+    () => ({
+      students: apiStudents ?? [],
+      meta,
+      page,
+      limit,
+      setPage,
+      setLimit: handleSetLimit,
+      addStudent,
+      refreshStudents,
+      isLoading,
+      error,
+    }),
+    [
+      apiStudents,
+      meta,
+      page,
+      limit,
+      handleSetLimit,
+      addStudent,
+      refreshStudents,
+      isLoading,
+      error,
+    ],
+  );
 
   return (
-    <StudentContext.Provider
-      value={{
-        students: apiStudents ?? [],
-        meta,
-        page,
-        limit,
-        setPage,
-        setLimit: (newLimit: number) => {
-          setLimit(newLimit);
-          setPage(1); // Reset para primeira página ao mudar o limite
-        },
-        addStudent,
-        refreshStudents,
-        isLoading,
-        error,
-      }}
-    >
+    <StudentContext.Provider value={contextValue}>
       {children}
     </StudentContext.Provider>
   );

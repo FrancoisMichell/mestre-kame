@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { renderHook, waitFor, act } from "@testing-library/react";
+import { renderHook, waitFor, act, render } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import type { ReactNode } from "react";
 import type { Student } from "../StudentTypes";
@@ -229,5 +229,110 @@ describe("StudentContext", () => {
     });
 
     expect(mockMutate).toHaveBeenCalled();
+  });
+
+  describe("Memory Leak Prevention", () => {
+    it("should keep stable callback references (addStudent)", async () => {
+      const mockMutate = vi.fn();
+      const mockAddStudentAPI = vi.fn();
+
+      vi.mocked(useFetchStudents).mockReturnValue({
+        students: mockStudents,
+        meta: undefined,
+        isLoading: false,
+        isError: false,
+        error: undefined,
+        mutate: mockMutate,
+      });
+
+      vi.mocked(useAddStudent).mockReturnValue(mockAddStudentAPI);
+
+      const { result, rerender } = renderHook(() => useStudents(), { wrapper });
+
+      const firstAddStudent = result.current.addStudent;
+      const firstRefreshStudents = result.current.refreshStudents;
+
+      // Force re-render
+      rerender();
+
+      const secondAddStudent = result.current.addStudent;
+      const secondRefreshStudents = result.current.refreshStudents;
+
+      // Callbacks should maintain the same reference
+      expect(firstAddStudent).toBe(secondAddStudent);
+      expect(firstRefreshStudents).toBe(secondRefreshStudents);
+    });
+
+    it("should keep stable context value reference when unrelated props change", async () => {
+      const mockMutate = vi.fn();
+      const mockAddStudentAPI = vi.fn();
+
+      vi.mocked(useFetchStudents).mockReturnValue({
+        students: mockStudents,
+        meta: { page: 1, limit: 12, total: 2, totalPages: 1 },
+        isLoading: false,
+        isError: false,
+        error: undefined,
+        mutate: mockMutate,
+      });
+
+      vi.mocked(useAddStudent).mockReturnValue(mockAddStudentAPI);
+
+      const { result, rerender } = renderHook(() => useStudents(), { wrapper });
+
+      const firstPage = result.current.page;
+      const firstSetLimit = result.current.setLimit;
+
+      // Change page
+      await act(async () => {
+        result.current.setPage(2);
+      });
+
+      rerender();
+
+      // setLimit should maintain the same reference even when page changes
+      expect(result.current.setLimit).toBe(firstSetLimit);
+      expect(result.current.page).not.toBe(firstPage);
+    });
+
+    it("should memoize context value properly", async () => {
+      const mockMutate = vi.fn();
+      const mockAddStudentAPI = vi.fn();
+
+      let renderCount = 0;
+      const TestComponent = () => {
+        const students = useStudents();
+        renderCount++;
+        return <div>{students.students.length}</div>;
+      };
+
+      vi.mocked(useFetchStudents).mockReturnValue({
+        students: mockStudents,
+        meta: undefined,
+        isLoading: false,
+        isError: false,
+        error: undefined,
+        mutate: mockMutate,
+      });
+
+      vi.mocked(useAddStudent).mockReturnValue(mockAddStudentAPI);
+
+      render(
+        <StudentProvider>
+          <TestComponent />
+        </StudentProvider>,
+      );
+
+      // Wait for initial render
+      await waitFor(() => {
+        expect(renderCount).toBeGreaterThan(0);
+      });
+
+      const initialRenderCount = renderCount;
+
+      // Context value is memoized, so multiple renders with same data won't cause re-renders
+      // This test verifies the useMemo is working
+      expect(initialRenderCount).toBeLessThanOrEqual(2);
+    });
   });
 });

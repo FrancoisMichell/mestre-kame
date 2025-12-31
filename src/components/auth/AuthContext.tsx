@@ -3,6 +3,8 @@ import {
   useContext,
   useEffect,
   useState,
+  useCallback,
+  useMemo,
   type ReactNode,
 } from "react";
 import type { AuthContextType, LoginCredentials, User } from "./AuthTypes";
@@ -37,7 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     checkAuth();
   }, []);
 
-  const login = async (credentials: LoginCredentials) => {
+  const login = useCallback(async (credentials: LoginCredentials) => {
     try {
       setIsLoading(true);
       setSessionExpiredMessage(null);
@@ -53,38 +55,47 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
     setUser(null);
     setSessionExpiredMessage(null);
-  };
+  }, []);
 
-  const handleSessionExpired = () => {
+  const handleSessionExpired = useCallback(() => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
     setUser(null);
     setSessionExpiredMessage(
       "Sua sessão expirou. Por favor, faça login novamente.",
     );
-  };
+  }, []);
+
+  // Memoizar o valor do contexto para evitar re-renders desnecessários
+  const contextValue = useMemo(
+    () => ({
+      user,
+      isAuthenticated: !!user,
+      isLoading,
+      login,
+      logout,
+      handleSessionExpired,
+      sessionExpiredMessage,
+    }),
+    [
+      user,
+      isLoading,
+      login,
+      logout,
+      handleSessionExpired,
+      sessionExpiredMessage,
+    ],
+  );
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        isLoading,
-        login,
-        logout,
-        handleSessionExpired,
-        sessionExpiredMessage,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
 
