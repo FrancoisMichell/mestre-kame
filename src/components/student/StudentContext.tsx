@@ -1,9 +1,15 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 import type { Student } from "./StudentTypes";
+import type { PaginationMeta } from "../../types/api";
 import { useFetchStudents, useAddStudent } from "../../api/hooks";
 
 interface StudentContextType {
   students: Student[];
+  meta?: PaginationMeta;
+  page: number;
+  limit: number;
+  setPage: (page: number) => void;
+  setLimit: (limit: number) => void;
   addStudent: (student: Student) => Promise<void>;
   refreshStudents: () => Promise<void>;
   isLoading: boolean;
@@ -15,12 +21,16 @@ const StudentContext = createContext<StudentContextType | undefined>(undefined);
 export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(12);
+
   const {
     students: apiStudents,
+    meta,
     isLoading,
     error,
     mutate,
-  } = useFetchStudents();
+  } = useFetchStudents({ page, limit });
   // Removido localStudents, usa diretamente apiStudents
   const addStudentAPI = useAddStudent();
 
@@ -44,6 +54,14 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
     <StudentContext.Provider
       value={{
         students: apiStudents ?? [],
+        meta,
+        page,
+        limit,
+        setPage,
+        setLimit: (newLimit: number) => {
+          setLimit(newLimit);
+          setPage(1); // Reset para primeira página ao mudar o limite
+        },
         addStudent,
         refreshStudents,
         isLoading,

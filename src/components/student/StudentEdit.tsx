@@ -20,7 +20,7 @@ const StudentEdit: React.FC = () => {
   const [registry, setRegistry] = useState("");
   const [birthday, setBirthday] = useState("");
   const [trainingSince, setTrainingSince] = useState("");
-  const [belt, setBelt] = useState<Belt>("White");
+  const [belt, setBelt] = useState<Belt>("white");
   const [isActive, setIsActive] = useState(true);
 
   useEffect(() => {
@@ -111,7 +111,7 @@ const StudentEdit: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
+    <div className="container mx-auto px-4 pt-24 pb-8 max-w-2xl">
       <div className="bg-white rounded-lg shadow-md p-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">
           Editar Estudante

@@ -41,7 +41,7 @@ describe("StudentRegisterForm", () => {
     await userEvent.type(registry, "2025001");
     await userEvent.type(birthday, "2000-01-02");
     await userEvent.type(trainingSince, "2022-01-01");
-    await userEvent.selectOptions(belt, "White");
+    await userEvent.selectOptions(belt, "white");
 
     await userEvent.click(submit);
 
@@ -50,7 +50,7 @@ describe("StudentRegisterForm", () => {
     type ViMockShape = { mock: { calls: unknown[][] } };
     const typedMock = addStudentMock as unknown as ViMockShape;
     const calledWith = typedMock.mock.calls[0][0] as Record<string, unknown>;
-    expect(calledWith).toHaveProperty("belt", "White");
+    expect(calledWith).toHaveProperty("belt", "white");
     expect(calledWith).toHaveProperty("name", "Aluno Test");
     expect(calledWith).toHaveProperty("registry", "2025001");
     expect(calledWith).toHaveProperty("birthday", "2000-01-02");

@@ -20,7 +20,9 @@ describe("useFetchStudents", () => {
 
     // Verifica se os dados foram carregados
     expect(result.current.students).toHaveLength(3);
-    expect(result.current.students[0].name).toBe("João Silva");
+    if (result.current.students.length > 0) {
+      expect(result.current.students[0].name).toBe("João Silva");
+    }
     expect(result.current.isError).toBe(false);
   });
 
@@ -66,7 +68,7 @@ describe("useAddStudent", () => {
       name: "João Silva",
       birthday: "2005-03-15",
       registry: "987654",
-      belt: "White" as const,
+      belt: "white" as const,
       trainingSince: "2025-01-10",
       isActive: true,
       color: "#e5e7eb",
@@ -89,7 +91,7 @@ describe("useAddStudent", () => {
       name: "Maria Santos",
       birthday: "2004-07-20",
       registry: "987655",
-      belt: "Yellow" as const,
+      belt: "yellow" as const,
       trainingSince: "2025-01-10",
       isActive: true,
       color: "#facc15",

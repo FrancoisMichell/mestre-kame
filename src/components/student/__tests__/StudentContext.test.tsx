@@ -22,7 +22,7 @@ describe("StudentContext", () => {
       name: "João Silva",
       registry: "321123",
       birthday: "2000-01-15",
-      belt: "White",
+      belt: "white",
       trainingSince: "2024-01-10",
       isActive: true,
       color: "#E5E7EB",
@@ -32,7 +32,7 @@ describe("StudentContext", () => {
       name: "Maria Santos",
       registry: "654321 ",
       birthday: "1998-05-20",
-      belt: "Blue",
+      belt: "blue",
       trainingSince: "2023-06-15",
       isActive: true,
       color: "#2563eb",
@@ -48,6 +48,7 @@ describe("StudentContext", () => {
 
     vi.mocked(useFetchStudents).mockReturnValue({
       students: mockStudents,
+      meta: undefined,
       isLoading: false,
       isError: false,
       error: undefined,
@@ -68,6 +69,7 @@ describe("StudentContext", () => {
   it("should handle loading state", async () => {
     vi.mocked(useFetchStudents).mockReturnValue({
       students: [],
+      meta: undefined,
       isLoading: true,
       isError: false,
       error: undefined,
@@ -89,6 +91,7 @@ describe("StudentContext", () => {
 
     vi.mocked(useFetchStudents).mockReturnValue({
       students: [],
+      meta: undefined,
       isLoading: false,
       isError: true,
       error: mockError,
@@ -111,6 +114,7 @@ describe("StudentContext", () => {
 
     vi.mocked(useFetchStudents).mockReturnValue({
       students: mockStudents,
+      meta: undefined,
       isLoading: false,
       isError: false,
       error: undefined,
@@ -126,7 +130,7 @@ describe("StudentContext", () => {
       name: "Pedro Costa",
       registry: "123321",
       birthday: "2001-03-10",
-      belt: "Yellow",
+      belt: "yellow",
       trainingSince: "2024-02-01",
       isActive: true,
       color: "#EAB308",
@@ -147,6 +151,7 @@ describe("StudentContext", () => {
 
     vi.mocked(useFetchStudents).mockReturnValue({
       students: mockStudents,
+      meta: undefined,
       isLoading: false,
       isError: false,
       error: undefined,
@@ -162,7 +167,7 @@ describe("StudentContext", () => {
       name: "Pedro Costa",
       registry: "123321",
       birthday: "2001-03-10",
-      belt: "Yellow",
+      belt: "yellow",
       trainingSince: "2024-02-01",
       isActive: true,
       color: "#EAB308",
@@ -181,6 +186,7 @@ describe("StudentContext", () => {
   it("should return empty array when students is undefined", async () => {
     vi.mocked(useFetchStudents).mockReturnValue({
       students: undefined as unknown as Student[],
+      meta: undefined,
       isLoading: false,
       isError: false,
       error: undefined,
@@ -207,6 +213,7 @@ describe("StudentContext", () => {
 
     vi.mocked(useFetchStudents).mockReturnValue({
       students: mockStudents,
+      meta: undefined,
       isLoading: false,
       isError: false,
       error: undefined,

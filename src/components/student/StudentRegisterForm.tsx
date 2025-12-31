@@ -7,7 +7,7 @@ import { beltOptions, getBeltName } from "./StudentUtils";
 
 const initialFormData: NewStudent = {
   name: "",
-  belt: "White",
+  belt: "white",
 };
 
 const RegisterForm: React.FC = () => {
@@ -91,8 +91,8 @@ const RegisterForm: React.FC = () => {
         </div>
 
         {/* Datas (Birthday e TrainingSince) */}
-        <div className="flex space-x-4 mb-6">
-          <div className="w-1/2">
+        <div className="flex flex-wrap gap-4 mb-6">
+          <div className="flex-1" style={{ minWidth: "200px" }}>
             <label
               htmlFor="birthday"
               className="block text-sm font-medium text-gray-700 mb-1"
@@ -108,7 +108,7 @@ const RegisterForm: React.FC = () => {
               className="text-gray-900 w-full border border-gray-300 p-3 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
             />
           </div>
-          <div className="w-1/2">
+          <div className="flex-1" style={{ minWidth: "200px" }}>
             <label
               htmlFor="trainingSince"
               className="block text-sm font-medium text-gray-700 mb-1"
