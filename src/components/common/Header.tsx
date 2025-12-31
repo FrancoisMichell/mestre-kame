@@ -52,7 +52,7 @@ const Header = () => {
             </a>
             {user && (
               <div className="flex items-center space-x-2">
-                <span className="text-gray-700 text-sm font-medium">
+                <span className="text-gray-700 text-sm font-medium max-w-[150px] truncate">
                   {user.name}
                 </span>
                 <button

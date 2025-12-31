@@ -140,7 +140,7 @@ describe("StudentEdit", () => {
     });
 
     const beltSelect = screen.getByLabelText("Faixa *");
-    await user.selectOptions(beltSelect, "Black");
+    await user.selectOptions(beltSelect, "black");
 
     expect(screen.getByDisplayValue("Preta")).toBeInTheDocument();
   });

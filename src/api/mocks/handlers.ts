@@ -7,7 +7,7 @@ const mockStudents: Student[] = [
   {
     id: "1",
     name: "João Silva",
-    belt: "White",
+    belt: "white",
     color: "#E5E7EB",
     birthday: "2000-05-15",
     registry: "987654",
@@ -17,7 +17,7 @@ const mockStudents: Student[] = [
   {
     id: "2",
     name: "Maria Santos",
-    belt: "Blue",
+    belt: "blue",
     color: "#2563eb",
     birthday: "1998-08-20",
     registry: "987655",
@@ -27,7 +27,7 @@ const mockStudents: Student[] = [
   {
     id: "3",
     name: "Carlos Oliveira",
-    belt: "Brown",
+    belt: "brown",
     color: "#8B6F47",
     birthday: "1995-03-10",
     registry: "987656",
@@ -44,7 +44,15 @@ export const handlers = [
   // }),
 
   http.get(`${API_BASE_URL}/students`, () => {
-    return HttpResponse.json(mockStudents);
+    return HttpResponse.json({
+      data: mockStudents,
+      meta: {
+        total: mockStudents.length,
+        page: 1,
+        limit: 10,
+        totalPages: 1,
+      },
+    });
   }),
 
   http.get(`${API_BASE_URL}/students/:id`, ({ params }) => {

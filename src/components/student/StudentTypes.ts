@@ -1,11 +1,11 @@
 export type Belt =
-  | "White"
-  | "Yellow"
-  | "Orange"
-  | "Green"
-  | "Blue"
-  | "Brown"
-  | "Black";
+  | "white"
+  | "yellow"
+  | "orange"
+  | "green"
+  | "blue"
+  | "brown"
+  | "black";
 
 export interface Student {
   id: string;

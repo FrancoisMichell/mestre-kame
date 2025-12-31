@@ -1,18 +1,37 @@
 import useSWR from "swr";
 import type { Student } from "../components/student/StudentTypes";
+import type { PaginatedResponse } from "../types/api";
 import apiClient from "./client";
 import { ENDPOINTS } from "./endpoints";
 
 const fetcher = (url: string) => apiClient.get(url).then(({ data }) => data);
 
-export const useFetchStudents = () => {
-  const { data, error, isLoading, mutate } = useSWR<Student[]>(
-    ENDPOINTS.STUDENTS.LIST,
+export interface UseFetchStudentsParams {
+  page?: number;
+  limit?: number;
+}
+
+export const useFetchStudents = (params?: UseFetchStudentsParams) => {
+  const queryParams = new URLSearchParams();
+  if (params?.page) queryParams.append("page", params.page.toString());
+  if (params?.limit) queryParams.append("limit", params.limit.toString());
+
+  const url = queryParams.toString()
+    ? `${ENDPOINTS.STUDENTS.LIST}?${queryParams.toString()}`
+    : ENDPOINTS.STUDENTS.LIST;
+
+  const { data, error, isLoading, mutate } = useSWR<PaginatedResponse<Student>>(
+    url,
     fetcher,
-    { revalidateOnFocus: false, dedupingInterval: 60000 },
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 2000, // Reduzido para 2s para permitir mudanças de página
+      keepPreviousData: true, // Mantém dados anteriores enquanto carrega novos
+    },
   );
   return {
-    students: data || [],
+    students: data?.data || [],
+    meta: data?.meta,
     isLoading,
     isError: !!error,
     error,
