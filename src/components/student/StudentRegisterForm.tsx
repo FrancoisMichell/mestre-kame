@@ -3,7 +3,7 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { type Student, type NewStudent } from "./StudentTypes";
 import { useNavigate } from "react-router-dom";
 import { useStudents } from "./StudentContext";
-import { beltOptions, getBeltName } from "./StudentUtils";
+import { beltOptions, beltConfigs } from "./beltConfig";
 
 const initialFormData: NewStudent = {
   name: "",
@@ -144,7 +144,7 @@ const RegisterForm: React.FC = () => {
           >
             {beltOptions.map((belt) => (
               <option key={belt} value={belt}>
-                {getBeltName(belt)}
+                {beltConfigs[belt].name}
               </option>
             ))}
           </select>

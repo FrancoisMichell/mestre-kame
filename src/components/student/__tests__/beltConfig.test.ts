@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { beltConfigs } from "../beltConfig";
 import type { Belt } from "../StudentTypes";
 
-describe("StudentUtils", () => {
+describe("beltConfig", () => {
   describe("beltConfigs colors", () => {
     it("returns correct color for White belt", () => {
       expect(beltConfigs.white.color).toBe("#e5e7eb");

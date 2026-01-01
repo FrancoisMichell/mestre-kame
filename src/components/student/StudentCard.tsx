@@ -1,6 +1,6 @@
 import React from "react";
 import type { StudentCardProps } from "./StudentTypes";
-import { getBeltColor, getBeltName } from "./StudentUtils";
+import { beltConfigs } from "./beltConfig";
 import { useNavigate } from "react-router-dom";
 
 const formatDate = (dateString: string | null) => {
@@ -12,7 +12,7 @@ const formatDate = (dateString: string | null) => {
 
 const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
   const { name, registry, birthday, isActive, trainingSince, belt } = student;
-  const beltColor = getBeltColor(belt);
+  const beltColor = beltConfigs[belt].color;
   const navigate = useNavigate();
 
   // Classes condicionais para Status
@@ -47,7 +47,7 @@ const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
               style={{ color: beltColor }}
               className="text-xs font-semibold capitalize"
             >
-              {getBeltName(belt)}
+              {beltConfigs[belt].name}
             </span>
           </div>
           <div className="flex gap-4 text-xs text-gray-500 mt-0.5">
@@ -72,7 +72,7 @@ const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
                 }}
                 className="mr-3"
               >
-                {getBeltName(belt)}
+                {beltConfigs[belt].name}
               </span>
             </p>
           </div>
