@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import type { Belt, Student } from "./StudentTypes";
 import { ENDPOINTS } from "../../api/endpoints";
 import { apiClient } from "../../api/client";
-import { beltOptions, getBeltName } from "./StudentUtils";
+import { beltOptions, beltConfigs } from "./beltConfig";
 import { useNavigate, useParams } from "react-router-dom";
 import { useStudents } from "./StudentContext";
 
@@ -176,7 +176,7 @@ const StudentEdit: React.FC = () => {
             >
               {beltOptions.map((b) => (
                 <option key={b} value={b}>
-                  {getBeltName(b)}
+                  {beltConfigs[b].name}
                 </option>
               ))}
             </select>
