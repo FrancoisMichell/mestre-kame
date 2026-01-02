@@ -9,12 +9,16 @@ const fetcher = (url: string) => apiClient.get(url).then(({ data }) => data);
 export interface UseFetchStudentsParams {
   page?: number;
   limit?: number;
+  sortBy?: "name" | "registry" | "belt" | "createdAt";
+  sortOrder?: "ASC" | "DESC";
 }
 
 export const useFetchStudents = (params?: UseFetchStudentsParams) => {
   const queryParams = new URLSearchParams();
   if (params?.page) queryParams.append("page", params.page.toString());
   if (params?.limit) queryParams.append("limit", params.limit.toString());
+  if (params?.sortBy) queryParams.append("sortBy", params.sortBy);
+  if (params?.sortOrder) queryParams.append("sortOrder", params.sortOrder);
 
   const url = queryParams.toString()
     ? `${ENDPOINTS.STUDENTS.LIST}?${queryParams.toString()}`

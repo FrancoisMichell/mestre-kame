@@ -7,6 +7,7 @@ import Home from "../Home";
 import * as StudentContext from "../../components/student/StudentContext";
 import type { Student } from "../../components/student/StudentTypes";
 import type { PaginationMeta } from "../../types/api";
+import type { StudentContextType } from "../../components/student/StudentContext";
 
 // Mock StudentContext
 vi.mock("../../components/student/StudentContext", () => ({
@@ -61,7 +62,7 @@ describe("Home", () => {
       error: undefined,
       addStudent: vi.fn(),
       refreshStudents: vi.fn(),
-    });
+    } as unknown as StudentContextType);
 
     renderHome();
     expect(screen.getByText("Lista de Alunos")).toBeInTheDocument();
@@ -79,7 +80,7 @@ describe("Home", () => {
       error: undefined,
       addStudent: vi.fn(),
       refreshStudents: vi.fn(),
-    });
+    } as unknown as StudentContextType);
 
     const { container } = renderHome();
     const spinner = container.querySelector(".animate-spin");
@@ -107,7 +108,7 @@ describe("Home", () => {
       error: mockError,
       addStudent: vi.fn(),
       refreshStudents: vi.fn(),
-    });
+    } as unknown as StudentContextType);
 
     renderHome();
 
@@ -127,7 +128,7 @@ describe("Home", () => {
       error: {} as Error,
       addStudent: vi.fn(),
       refreshStudents: vi.fn(),
-    });
+    } as unknown as StudentContextType);
 
     renderHome();
 
@@ -147,7 +148,7 @@ describe("Home", () => {
       error: undefined,
       addStudent: vi.fn(),
       refreshStudents: vi.fn(),
-    });
+    } as unknown as StudentContextType);
 
     renderHome();
     expect(screen.getByText("Nenhum aluno cadastrado.")).toBeInTheDocument();
@@ -165,7 +166,7 @@ describe("Home", () => {
       error: undefined,
       addStudent: vi.fn(),
       refreshStudents: vi.fn(),
-    });
+    } as unknown as StudentContextType);
 
     renderHome();
 
@@ -186,7 +187,7 @@ describe("Home", () => {
       error: undefined,
       addStudent: vi.fn(),
       refreshStudents: vi.fn(),
-    });
+    } as unknown as StudentContextType);
 
     renderHome();
 
@@ -207,7 +208,7 @@ describe("Home", () => {
       error: undefined,
       addStudent: vi.fn(),
       refreshStudents: vi.fn(),
-    });
+    } as unknown as StudentContextType);
 
     const { container } = renderHome();
 
@@ -232,7 +233,7 @@ describe("Home", () => {
       error: undefined,
       addStudent: vi.fn(),
       refreshStudents: vi.fn(),
-    });
+    } as unknown as StudentContextType);
 
     const { container } = renderHome();
     const mainContainer = container.querySelector(".pt-20");
@@ -252,7 +253,7 @@ describe("Home", () => {
       error: undefined,
       addStudent: vi.fn(),
       refreshStudents: vi.fn(),
-    });
+    } as unknown as StudentContextType);
 
     renderHome();
     const header = screen.getByText("Lista de Alunos");
@@ -281,7 +282,7 @@ describe("Home", () => {
         error: undefined,
         addStudent: vi.fn(),
         refreshStudents: vi.fn(),
-      });
+      } as unknown as StudentContextType);
 
       renderHome();
 
@@ -303,7 +304,7 @@ describe("Home", () => {
         error: undefined,
         addStudent: vi.fn(),
         refreshStudents: vi.fn(),
-      });
+      } as unknown as StudentContextType);
 
       renderHome();
 
@@ -324,7 +325,7 @@ describe("Home", () => {
         error: undefined,
         addStudent: vi.fn(),
         refreshStudents: vi.fn(),
-      });
+      } as unknown as StudentContextType);
 
       renderHome();
       const prevButton = screen.getByRole("button", { name: "←" });
@@ -346,7 +347,7 @@ describe("Home", () => {
         error: undefined,
         addStudent: vi.fn(),
         refreshStudents: vi.fn(),
-      });
+      } as unknown as StudentContextType);
 
       renderHome();
       const nextButton = screen.getByRole("button", { name: "→" });
@@ -367,7 +368,7 @@ describe("Home", () => {
         error: undefined,
         addStudent: vi.fn(),
         refreshStudents: vi.fn(),
-      });
+      } as unknown as StudentContextType);
 
       renderHome();
       const prevButton = screen.getByRole("button", { name: "←" });
@@ -387,7 +388,7 @@ describe("Home", () => {
         error: undefined,
         addStudent: vi.fn(),
         refreshStudents: vi.fn(),
-      });
+      } as unknown as StudentContextType);
 
       renderHome();
       const nextButton = screen.getByRole("button", { name: "→" });
@@ -408,7 +409,7 @@ describe("Home", () => {
         error: undefined,
         addStudent: vi.fn(),
         refreshStudents: vi.fn(),
-      });
+      } as unknown as StudentContextType);
 
       renderHome();
       const select = screen.getByLabelText(/Por página:/);
@@ -429,17 +430,17 @@ describe("Home", () => {
         error: undefined,
         addStudent: vi.fn(),
         refreshStudents: vi.fn(),
-      });
+      } as unknown as StudentContextType);
 
       const { container } = renderHome();
-      const gridContainer = container.querySelector(".grid");
+      const gridContainers = container.querySelectorAll(".grid");
+      const gridContainer = gridContainers[1]; // O segundo grid é o de cards
 
       expect(gridContainer).toBeInTheDocument();
-      expect(gridContainer).toHaveClass(
-        "grid-cols-1",
-        "lg:grid-cols-2",
-        "xl:grid-cols-3",
-      );
+      expect(gridContainer).toHaveClass("grid");
+      expect(gridContainer).toHaveClass("grid-cols-1");
+      expect(gridContainer).toHaveClass("lg:grid-cols-2");
+      expect(gridContainer).toHaveClass("xl:grid-cols-3");
     });
   });
 });
