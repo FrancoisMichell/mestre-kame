@@ -5,8 +5,20 @@ import StudentCard from "../components/student/StudentCard";
 import { useStudents } from "../components/student/StudentContext";
 
 const Home: React.FC = () => {
-  const { students, meta, page, limit, setPage, setLimit, isLoading, error } =
-    useStudents();
+  const {
+    students,
+    meta,
+    page,
+    limit,
+    sortBy,
+    sortOrder,
+    setPage,
+    setLimit,
+    setSortBy,
+    setSortOrder,
+    isLoading,
+    error,
+  } = useStudents();
 
   const containerClass =
     "pt-20 md:pt-24 flex flex-col gap-2 md:gap-4 px-4 md:px-5 py-3 max-w-6xl mx-auto";
@@ -48,6 +60,51 @@ const Home: React.FC = () => {
   return (
     <div className={containerClass}>
       <h1 className={headerClass}>Lista de Alunos</h1>
+
+      {/* Controles de Ordenação */}
+      <div className="bg-white p-3 md:p-4 rounded-lg shadow-sm mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Ordenar por */}
+          <div>
+            <label
+              htmlFor="sortBy"
+              className="block text-xs font-medium text-gray-700 mb-1.5"
+            >
+              Ordenar por
+            </label>
+            <select
+              id="sortBy"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500"
+            >
+              <option value="name">Nome</option>
+              <option value="registry">Matrícula</option>
+              <option value="belt">Faixa</option>
+              <option value="createdAt">Data de Cadastro</option>
+            </select>
+          </div>
+
+          {/* Direção */}
+          <div>
+            <label
+              htmlFor="sortOrder"
+              className="block text-xs font-medium text-gray-700 mb-1.5"
+            >
+              Direção
+            </label>
+            <select
+              id="sortOrder"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500"
+            >
+              <option value="ASC">A → Z (Crescente)</option>
+              <option value="DESC">Z → A (Decrescente)</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
       {content()}
 
