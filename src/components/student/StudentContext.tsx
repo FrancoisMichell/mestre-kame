@@ -9,7 +9,7 @@ import type { Student } from "./StudentTypes";
 import type { PaginationMeta } from "../../types/api";
 import { useFetchStudents, useAddStudent } from "../../api/hooks";
 
-interface StudentContextType {
+export interface StudentContextType {
   students: Student[];
   meta?: PaginationMeta;
   page: number;
