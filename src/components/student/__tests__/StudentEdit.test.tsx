@@ -7,6 +7,7 @@ import StudentEdit from "../StudentEdit";
 import * as StudentContext from "../StudentContext";
 import { apiClient } from "../../../api/client";
 import type { Student } from "../StudentTypes";
+import type { StudentContextType } from "../StudentContext";
 
 // Mock do apiClient
 vi.mock("../../../api/client");
@@ -68,7 +69,7 @@ describe("StudentEdit", () => {
       limit: 12,
       setPage: vi.fn(),
       setLimit: vi.fn(),
-    });
+    } as unknown as StudentContextType);
   });
 
   it("should show loading spinner while fetching student data", () => {
