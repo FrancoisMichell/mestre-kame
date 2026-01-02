@@ -432,14 +432,14 @@ describe("Home", () => {
       });
 
       const { container } = renderHome();
-      const gridContainer = container.querySelector(".grid");
+      const gridContainers = container.querySelectorAll(".grid");
+      const gridContainer = gridContainers[1]; // O segundo grid é o de cards
 
       expect(gridContainer).toBeInTheDocument();
-      expect(gridContainer).toHaveClass(
-        "grid-cols-1",
-        "lg:grid-cols-2",
-        "xl:grid-cols-3",
-      );
+      expect(gridContainer).toHaveClass("grid");
+      expect(gridContainer).toHaveClass("grid-cols-1");
+      expect(gridContainer).toHaveClass("lg:grid-cols-2");
+      expect(gridContainer).toHaveClass("xl:grid-cols-3");
     });
   });
 });

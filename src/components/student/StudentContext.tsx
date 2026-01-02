@@ -14,8 +14,12 @@ interface StudentContextType {
   meta?: PaginationMeta;
   page: number;
   limit: number;
+  sortBy: string;
+  sortOrder: string;
   setPage: (page: number) => void;
   setLimit: (limit: number) => void;
+  setSortBy: (sortBy: string) => void;
+  setSortOrder: (sortOrder: string) => void;
   addStudent: (student: Student) => Promise<void>;
   refreshStudents: () => Promise<void>;
   isLoading: boolean;
@@ -29,6 +33,8 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
+  const [sortBy, setSortBy] = useState("name");
+  const [sortOrder, setSortOrder] = useState("ASC");
 
   const {
     students: apiStudents,
@@ -36,7 +42,12 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
     isLoading,
     error,
     mutate,
-  } = useFetchStudents({ page, limit });
+  } = useFetchStudents({
+    page,
+    limit,
+    sortBy: sortBy as "name" | "registry" | "belt" | "createdAt",
+    sortOrder: sortOrder as "ASC" | "DESC",
+  });
   // Removido localStudents, usa diretamente apiStudents
   const addStudentAPI = useAddStudent();
 
@@ -69,8 +80,12 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
       meta,
       page,
       limit,
+      sortBy,
+      sortOrder,
       setPage,
       setLimit: handleSetLimit,
+      setSortBy,
+      setSortOrder,
       addStudent,
       refreshStudents,
       isLoading,
@@ -81,6 +96,8 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
       meta,
       page,
       limit,
+      sortBy,
+      sortOrder,
       handleSetLimit,
       addStudent,
       refreshStudents,
