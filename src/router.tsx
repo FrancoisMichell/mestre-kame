@@ -9,16 +9,13 @@ import { AuthProvider, useAuth } from "./components/auth/AuthContext";
 import Login from "./pages/Login";
 import { setSessionExpiredCallback } from "./api/client";
 import StudentEdit from "./components/student/StudentEdit";
+import LoadingSpinner from "./components/common/LoadingSpinner";
 
 const ProtectedRoute: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <LoadingSpinner fullScreen />;
   }
 
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
@@ -43,18 +40,20 @@ const AppRoutes: React.FC = () => {
         path="/*"
         element={
           <ProtectedRoute>
-            <Header />
-            <main className="pt-24">
-              <Routes>
-                <Route element={<Home />} path="/" />
-                <Route element={<RegisterForm />} path="/cadastro" />
-                <Route element={<StudentEdit />} path="/aluno/:id" />
-                <Route
-                  element={<h1>404 | Página não encontrada</h1>}
-                  path="*"
-                />
-              </Routes>
-            </main>
+            <StudentProvider>
+              <Header />
+              <main className="pt-24">
+                <Routes>
+                  <Route element={<Home />} path="/" />
+                  <Route element={<RegisterForm />} path="/cadastro" />
+                  <Route element={<StudentEdit />} path="/aluno/:id" />
+                  <Route
+                    element={<h1>404 | Página não encontrada</h1>}
+                    path="*"
+                  />
+                </Routes>
+              </main>
+            </StudentProvider>
           </ProtectedRoute>
         }
       />
@@ -65,11 +64,9 @@ const AppRoutes: React.FC = () => {
 const Router: React.FC = () => {
   return (
     <AuthProvider>
-      <StudentProvider>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </StudentProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
     </AuthProvider>
   );
 };
