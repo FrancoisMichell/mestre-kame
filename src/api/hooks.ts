@@ -11,6 +11,10 @@ export interface UseFetchStudentsParams {
   limit?: number;
   sortBy?: "name" | "registry" | "belt" | "createdAt";
   sortOrder?: "ASC" | "DESC";
+  name?: string;
+  registry?: string;
+  belt?: string;
+  isActive?: boolean;
 }
 
 export const useFetchStudents = (params?: UseFetchStudentsParams) => {
@@ -19,13 +23,21 @@ export const useFetchStudents = (params?: UseFetchStudentsParams) => {
   if (params?.limit) queryParams.append("limit", params.limit.toString());
   if (params?.sortBy) queryParams.append("sortBy", params.sortBy);
   if (params?.sortOrder) queryParams.append("sortOrder", params.sortOrder);
+  if (params?.name) queryParams.append("name", params.name);
+  if (params?.registry) queryParams.append("registry", params.registry);
+  if (params?.belt) queryParams.append("belt", params.belt);
+  if (params?.isActive !== undefined)
+    queryParams.append("isActive", params.isActive.toString());
 
   const url = queryParams.toString()
     ? `${ENDPOINTS.STUDENTS.LIST}?${queryParams.toString()}`
     : ENDPOINTS.STUDENTS.LIST;
 
+  // Só faz fetch se houver token de autenticação
+  const hasToken = !!localStorage.getItem("authToken");
+
   const { data, error, isLoading, mutate } = useSWR<PaginatedResponse<Student>>(
-    url,
+    hasToken ? url : null, // null desabilita o fetch
     fetcher,
     {
       revalidateOnFocus: false,
