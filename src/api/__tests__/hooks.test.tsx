@@ -1,12 +1,17 @@
 import { SWRConfig } from "swr";
 import { waitFor } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { useFetchStudents, useAddStudent } from "../hooks";
 import { server } from "../mocks/server";
 import { http, HttpResponse } from "msw";
 
 describe("useFetchStudents", () => {
+  beforeEach(() => {
+    // Mock do localStorage com token válido
+    localStorage.setItem("authToken", "valid-token");
+  });
+
   it("should fetch students successfully", async () => {
     const { result } = renderHook(() => useFetchStudents());
 

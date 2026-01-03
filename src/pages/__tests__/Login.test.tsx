@@ -43,16 +43,16 @@ describe("Login", () => {
 
     expect(screen.getByText("Mestre Kame")).toBeInTheDocument();
     expect(screen.getByText("Faça login para continuar")).toBeInTheDocument();
-    expect(screen.getByLabelText("Matrícula")).toBeInTheDocument();
-    expect(screen.getByLabelText("Senha")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Ex: 01AA123123")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("********")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Entrar" })).toBeInTheDocument();
   });
 
   it("should have correct input placeholders and types", () => {
     renderLogin();
 
-    const usernameInput = screen.getByLabelText("Matrícula");
-    const passwordInput = screen.getByLabelText("Senha");
+    const usernameInput = screen.getByPlaceholderText("Ex: 01AA123123");
+    const passwordInput = screen.getByPlaceholderText("********");
 
     expect(usernameInput).toHaveAttribute("type", "text");
     expect(usernameInput).toHaveAttribute("placeholder", "Ex: 01AA123123");
@@ -64,8 +64,8 @@ describe("Login", () => {
     const user = userEvent.setup();
     renderLogin();
 
-    const usernameInput = screen.getByLabelText("Matrícula");
-    const passwordInput = screen.getByLabelText("Senha");
+    const usernameInput = screen.getByPlaceholderText("Ex: 01AA123123");
+    const passwordInput = screen.getByPlaceholderText("********");
 
     await user.type(usernameInput, "joao123");
     await user.type(passwordInput, "senha123");
@@ -92,8 +92,8 @@ describe("Login", () => {
 
     renderLogin();
 
-    const usernameInput = screen.getByLabelText("Matrícula");
-    const passwordInput = screen.getByLabelText("Senha");
+    const usernameInput = screen.getByPlaceholderText("Ex: 01AA123123");
+    const passwordInput = screen.getByPlaceholderText("********");
     const submitButton = screen.getByRole("button", { name: "Entrar" });
 
     await user.type(usernameInput, "joao123");
@@ -126,8 +126,8 @@ describe("Login", () => {
 
     renderLogin();
 
-    const usernameInput = screen.getByLabelText("Matrícula");
-    const passwordInput = screen.getByLabelText("Senha");
+    const usernameInput = screen.getByPlaceholderText("Ex: 01AA123123");
+    const passwordInput = screen.getByPlaceholderText("********");
     const submitButton = screen.getByRole("button", { name: "Entrar" });
 
     await user.type(usernameInput, "invalid");
@@ -147,8 +147,8 @@ describe("Login", () => {
 
     renderLogin();
 
-    const usernameInput = screen.getByLabelText("Matrícula");
-    const passwordInput = screen.getByLabelText("Senha");
+    const usernameInput = screen.getByPlaceholderText("Ex: 01AA123123");
+    const passwordInput = screen.getByPlaceholderText("********");
     const submitButton = screen.getByRole("button", { name: "Entrar" });
 
     await user.type(usernameInput, "joao123");
@@ -176,8 +176,8 @@ describe("Login", () => {
 
     renderLogin();
 
-    const usernameInput = screen.getByLabelText("Matrícula");
-    const passwordInput = screen.getByLabelText("Senha");
+    const usernameInput = screen.getByPlaceholderText("Ex: 01AA123123");
+    const passwordInput = screen.getByPlaceholderText("********");
     const submitButton = screen.getByRole("button", { name: "Entrar" });
 
     // First login attempt with error
@@ -211,8 +211,8 @@ describe("Login", () => {
 
     renderLogin();
 
-    const usernameInput = screen.getByLabelText("Matrícula");
-    const passwordInput = screen.getByLabelText("Senha");
+    const usernameInput = screen.getByPlaceholderText("Ex: 01AA123123");
+    const passwordInput = screen.getByPlaceholderText("********");
     const submitButton = screen.getByRole("button", { name: "Entrar" });
 
     await user.type(usernameInput, "joao123");

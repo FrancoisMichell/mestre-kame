@@ -7,7 +7,7 @@ import StudentEdit from "../StudentEdit";
 import * as StudentContext from "../StudentContext";
 import { apiClient } from "../../../api/client";
 import type { Student } from "../StudentTypes";
-import type { StudentContextType } from "../StudentContext";
+import { createMockStudentContext } from "../../../test-utils";
 
 // Mock do apiClient
 vi.mock("../../../api/client");
@@ -58,18 +58,12 @@ describe("StudentEdit", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    vi.mocked(StudentContext.useStudents).mockReturnValue({
-      students: [mockStudent],
-      meta: undefined,
-      isLoading: false,
-      error: undefined,
-      addStudent: vi.fn(),
-      refreshStudents: mockRefreshStudents,
-      page: 1,
-      limit: 12,
-      setPage: vi.fn(),
-      setLimit: vi.fn(),
-    } as unknown as StudentContextType);
+    vi.mocked(StudentContext.useStudents).mockReturnValue(
+      createMockStudentContext({
+        students: [mockStudent],
+        refreshStudents: mockRefreshStudents,
+      }),
+    );
   });
 
   it("should show loading spinner while fetching student data", () => {
@@ -79,8 +73,8 @@ describe("StudentEdit", () => {
 
     const { container } = renderStudentEdit();
 
-    const spinner = container.querySelector(".animate-spin");
-    expect(spinner).toBeInTheDocument();
+    const skeletons = container.querySelectorAll(".animate-pulse");
+    expect(skeletons.length).toBeGreaterThan(0);
   });
 
   it("should load and display student data", async () => {
@@ -226,9 +220,7 @@ describe("StudentEdit", () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(
-        screen.getByText("Erro ao salvar dados do estudante."),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Network error/)).toBeInTheDocument();
     });
   });
 
@@ -251,10 +243,11 @@ describe("StudentEdit", () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Salvando...")).toBeInTheDocument();
+      expect(submitButton).toBeDisabled();
+      // O botão em loading mostra apenas o spinner, não mais o texto
+      const spinner = submitButton.querySelector(".animate-spin");
+      expect(spinner).toBeInTheDocument();
     });
-
-    expect(submitButton).toBeDisabled();
   });
 
   it("should navigate back when cancel button is clicked", async () => {

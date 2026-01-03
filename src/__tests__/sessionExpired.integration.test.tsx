@@ -59,7 +59,7 @@ describe("Session Expired Integration Test", () => {
     render(<Router />);
 
     await waitFor(() => {
-      expect(screen.getByLabelText("Matrícula")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("Ex: 01AA123123")).toBeInTheDocument();
     });
   });
 });

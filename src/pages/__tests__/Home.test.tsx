@@ -7,7 +7,7 @@ import Home from "../Home";
 import * as StudentContext from "../../components/student/StudentContext";
 import type { Student } from "../../components/student/StudentTypes";
 import type { PaginationMeta } from "../../types/api";
-import type { StudentContextType } from "../../components/student/StudentContext";
+import { createMockStudentContext } from "../../test-utils";
 
 // Mock StudentContext
 vi.mock("../../components/student/StudentContext", () => ({
@@ -51,64 +51,30 @@ describe("Home", () => {
   });
 
   it("should render page title", () => {
-    vi.mocked(StudentContext.useStudents).mockReturnValue({
-      students: [],
-      meta: undefined,
-      page: 1,
-      limit: 12,
-      setPage: vi.fn(),
-      setLimit: vi.fn(),
-      isLoading: false,
-      error: undefined,
-      addStudent: vi.fn(),
-      refreshStudents: vi.fn(),
-    } as unknown as StudentContextType);
+    vi.mocked(StudentContext.useStudents).mockReturnValue(
+      createMockStudentContext(),
+    );
 
     renderHome();
     expect(screen.getByText("Lista de Alunos")).toBeInTheDocument();
   });
 
   it("should show loading spinner when isLoading is true", () => {
-    vi.mocked(StudentContext.useStudents).mockReturnValue({
-      students: [],
-      meta: undefined,
-      page: 1,
-      limit: 12,
-      setPage: vi.fn(),
-      setLimit: vi.fn(),
-      isLoading: true,
-      error: undefined,
-      addStudent: vi.fn(),
-      refreshStudents: vi.fn(),
-    } as unknown as StudentContextType);
+    vi.mocked(StudentContext.useStudents).mockReturnValue(
+      createMockStudentContext({ isLoading: true }),
+    );
 
     const { container } = renderHome();
-    const spinner = container.querySelector(".animate-spin");
+    const skeletons = container.querySelectorAll(".animate-pulse");
 
-    expect(spinner).toBeInTheDocument();
-    expect(spinner).toHaveClass(
-      "rounded-full",
-      "h-12",
-      "w-12",
-      "border-b-2",
-      "border-red-900",
-    );
+    expect(skeletons.length).toBeGreaterThan(0);
   });
 
   it("should display error message when error exists", () => {
     const mockError = new Error("Network error");
-    vi.mocked(StudentContext.useStudents).mockReturnValue({
-      students: [],
-      meta: undefined,
-      page: 1,
-      limit: 12,
-      setPage: vi.fn(),
-      setLimit: vi.fn(),
-      isLoading: false,
-      error: mockError,
-      addStudent: vi.fn(),
-      refreshStudents: vi.fn(),
-    } as unknown as StudentContextType);
+    vi.mocked(StudentContext.useStudents).mockReturnValue(
+      createMockStudentContext({ error: mockError }),
+    );
 
     renderHome();
 
@@ -117,18 +83,9 @@ describe("Home", () => {
   });
 
   it("should display generic error message when error has no message", () => {
-    vi.mocked(StudentContext.useStudents).mockReturnValue({
-      students: [],
-      meta: undefined,
-      page: 1,
-      limit: 12,
-      setPage: vi.fn(),
-      setLimit: vi.fn(),
-      isLoading: false,
-      error: {} as Error,
-      addStudent: vi.fn(),
-      refreshStudents: vi.fn(),
-    } as unknown as StudentContextType);
+    vi.mocked(StudentContext.useStudents).mockReturnValue(
+      createMockStudentContext({ error: new Error() }),
+    );
 
     renderHome();
 
@@ -137,36 +94,26 @@ describe("Home", () => {
   });
 
   it("should show empty state message when no students", () => {
-    vi.mocked(StudentContext.useStudents).mockReturnValue({
-      students: [],
-      meta: undefined,
-      page: 1,
-      limit: 12,
-      setPage: vi.fn(),
-      setLimit: vi.fn(),
-      isLoading: false,
-      error: undefined,
-      addStudent: vi.fn(),
-      refreshStudents: vi.fn(),
-    } as unknown as StudentContextType);
+    vi.mocked(StudentContext.useStudents).mockReturnValue(
+      createMockStudentContext({ students: [] }),
+    );
 
     renderHome();
-    expect(screen.getByText("Nenhum aluno cadastrado.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Nenhum aluno cadastrado ainda"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Comece cadastrando seu primeiro aluno/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Cadastrar Primeiro Aluno/ }),
+    ).toBeInTheDocument();
   });
 
   it("should render student cards when students exist", () => {
-    vi.mocked(StudentContext.useStudents).mockReturnValue({
-      students: mockStudents,
-      meta: undefined,
-      page: 1,
-      limit: 12,
-      setPage: vi.fn(),
-      setLimit: vi.fn(),
-      isLoading: false,
-      error: undefined,
-      addStudent: vi.fn(),
-      refreshStudents: vi.fn(),
-    } as unknown as StudentContextType);
+    vi.mocked(StudentContext.useStudents).mockReturnValue(
+      createMockStudentContext({ students: mockStudents }),
+    );
 
     renderHome();
 
@@ -176,18 +123,9 @@ describe("Home", () => {
   });
 
   it("should render correct number of student cards", () => {
-    vi.mocked(StudentContext.useStudents).mockReturnValue({
-      students: mockStudents,
-      meta: undefined,
-      page: 1,
-      limit: 12,
-      setPage: vi.fn(),
-      setLimit: vi.fn(),
-      isLoading: false,
-      error: undefined,
-      addStudent: vi.fn(),
-      refreshStudents: vi.fn(),
-    } as unknown as StudentContextType);
+    vi.mocked(StudentContext.useStudents).mockReturnValue(
+      createMockStudentContext({ students: mockStudents }),
+    );
 
     renderHome();
 
@@ -197,18 +135,9 @@ describe("Home", () => {
   });
 
   it("should not show loading or error when students are loaded", () => {
-    vi.mocked(StudentContext.useStudents).mockReturnValue({
-      students: mockStudents,
-      meta: undefined,
-      page: 1,
-      limit: 12,
-      setPage: vi.fn(),
-      setLimit: vi.fn(),
-      isLoading: false,
-      error: undefined,
-      addStudent: vi.fn(),
-      refreshStudents: vi.fn(),
-    } as unknown as StudentContextType);
+    vi.mocked(StudentContext.useStudents).mockReturnValue(
+      createMockStudentContext({ students: mockStudents }),
+    );
 
     const { container } = renderHome();
 
@@ -222,18 +151,9 @@ describe("Home", () => {
   });
 
   it("should apply correct CSS classes to container", () => {
-    vi.mocked(StudentContext.useStudents).mockReturnValue({
-      students: [],
-      meta: undefined,
-      page: 1,
-      limit: 12,
-      setPage: vi.fn(),
-      setLimit: vi.fn(),
-      isLoading: false,
-      error: undefined,
-      addStudent: vi.fn(),
-      refreshStudents: vi.fn(),
-    } as unknown as StudentContextType);
+    vi.mocked(StudentContext.useStudents).mockReturnValue(
+      createMockStudentContext({ students: [] }),
+    );
 
     const { container } = renderHome();
     const mainContainer = container.querySelector(".pt-20");
@@ -242,18 +162,9 @@ describe("Home", () => {
   });
 
   it("should apply correct CSS classes to header", () => {
-    vi.mocked(StudentContext.useStudents).mockReturnValue({
-      students: [],
-      meta: undefined,
-      page: 1,
-      limit: 12,
-      setPage: vi.fn(),
-      setLimit: vi.fn(),
-      isLoading: false,
-      error: undefined,
-      addStudent: vi.fn(),
-      refreshStudents: vi.fn(),
-    } as unknown as StudentContextType);
+    vi.mocked(StudentContext.useStudents).mockReturnValue(
+      createMockStudentContext({ students: [] }),
+    );
 
     renderHome();
     const header = screen.getByText("Lista de Alunos");
@@ -271,18 +182,19 @@ describe("Home", () => {
     };
 
     it("should display pagination controls when meta is provided", () => {
-      vi.mocked(StudentContext.useStudents).mockReturnValue({
-        students: mockStudents,
-        meta: mockMeta,
+      const mockMeta = {
         page: 2,
-        limit: 12,
-        setPage: vi.fn(),
-        setLimit: vi.fn(),
-        isLoading: false,
-        error: undefined,
-        addStudent: vi.fn(),
-        refreshStudents: vi.fn(),
-      } as unknown as StudentContextType);
+        total: 50,
+        limit: 10,
+        totalPages: 5,
+      };
+      vi.mocked(StudentContext.useStudents).mockReturnValue(
+        createMockStudentContext({
+          students: mockStudents,
+          meta: mockMeta,
+          page: 2,
+        }),
+      );
 
       renderHome();
 
@@ -293,18 +205,9 @@ describe("Home", () => {
     });
 
     it("should not display pagination controls when meta is not provided", () => {
-      vi.mocked(StudentContext.useStudents).mockReturnValue({
-        students: mockStudents,
-        meta: undefined,
-        page: 1,
-        limit: 12,
-        setPage: vi.fn(),
-        setLimit: vi.fn(),
-        isLoading: false,
-        error: undefined,
-        addStudent: vi.fn(),
-        refreshStudents: vi.fn(),
-      } as unknown as StudentContextType);
+      vi.mocked(StudentContext.useStudents).mockReturnValue(
+        createMockStudentContext({ students: mockStudents }),
+      );
 
       renderHome();
 
@@ -314,18 +217,20 @@ describe("Home", () => {
 
     it("should call setPage when clicking previous button", async () => {
       const setPageMock = vi.fn();
-      vi.mocked(StudentContext.useStudents).mockReturnValue({
-        students: mockStudents,
-        meta: mockMeta,
+      const mockMeta = {
         page: 2,
-        limit: 12,
-        setPage: setPageMock,
-        setLimit: vi.fn(),
-        isLoading: false,
-        error: undefined,
-        addStudent: vi.fn(),
-        refreshStudents: vi.fn(),
-      } as unknown as StudentContextType);
+        total: 50,
+        limit: 10,
+        totalPages: 5,
+      };
+      vi.mocked(StudentContext.useStudents).mockReturnValue(
+        createMockStudentContext({
+          students: mockStudents,
+          meta: mockMeta,
+          page: 2,
+          setPage: setPageMock,
+        }),
+      );
 
       renderHome();
       const prevButton = screen.getByRole("button", { name: "←" });
@@ -336,18 +241,20 @@ describe("Home", () => {
 
     it("should call setPage when clicking next button", async () => {
       const setPageMock = vi.fn();
-      vi.mocked(StudentContext.useStudents).mockReturnValue({
-        students: mockStudents,
-        meta: mockMeta,
+      const mockMeta = {
         page: 2,
-        limit: 12,
-        setPage: setPageMock,
-        setLimit: vi.fn(),
-        isLoading: false,
-        error: undefined,
-        addStudent: vi.fn(),
-        refreshStudents: vi.fn(),
-      } as unknown as StudentContextType);
+        total: 50,
+        limit: 10,
+        totalPages: 5,
+      };
+      vi.mocked(StudentContext.useStudents).mockReturnValue(
+        createMockStudentContext({
+          students: mockStudents,
+          meta: mockMeta,
+          page: 2,
+          setPage: setPageMock,
+        }),
+      );
 
       renderHome();
       const nextButton = screen.getByRole("button", { name: "→" });
@@ -357,18 +264,12 @@ describe("Home", () => {
     });
 
     it("should disable previous button on first page", () => {
-      vi.mocked(StudentContext.useStudents).mockReturnValue({
-        students: mockStudents,
-        meta: { ...mockMeta, page: 1 },
-        page: 1,
-        limit: 12,
-        setPage: vi.fn(),
-        setLimit: vi.fn(),
-        isLoading: false,
-        error: undefined,
-        addStudent: vi.fn(),
-        refreshStudents: vi.fn(),
-      } as unknown as StudentContextType);
+      vi.mocked(StudentContext.useStudents).mockReturnValue(
+        createMockStudentContext({
+          students: mockStudents,
+          meta: { ...mockMeta, page: 1 },
+        }),
+      );
 
       renderHome();
       const prevButton = screen.getByRole("button", { name: "←" });
@@ -377,18 +278,13 @@ describe("Home", () => {
     });
 
     it("should disable next button on last page", () => {
-      vi.mocked(StudentContext.useStudents).mockReturnValue({
-        students: mockStudents,
-        meta: { ...mockMeta, page: 5, totalPages: 5 },
-        page: 5,
-        limit: 12,
-        setPage: vi.fn(),
-        setLimit: vi.fn(),
-        isLoading: false,
-        error: undefined,
-        addStudent: vi.fn(),
-        refreshStudents: vi.fn(),
-      } as unknown as StudentContextType);
+      vi.mocked(StudentContext.useStudents).mockReturnValue(
+        createMockStudentContext({
+          students: mockStudents,
+          meta: { ...mockMeta, page: 5, totalPages: 5 },
+          page: 5,
+        }),
+      );
 
       renderHome();
       const nextButton = screen.getByRole("button", { name: "→" });
@@ -398,18 +294,20 @@ describe("Home", () => {
 
     it("should call setLimit when changing items per page", async () => {
       const setLimitMock = vi.fn();
-      vi.mocked(StudentContext.useStudents).mockReturnValue({
-        students: mockStudents,
-        meta: mockMeta,
+      const mockMeta = {
         page: 2,
-        limit: 12,
-        setPage: vi.fn(),
-        setLimit: setLimitMock,
-        isLoading: false,
-        error: undefined,
-        addStudent: vi.fn(),
-        refreshStudents: vi.fn(),
-      } as unknown as StudentContextType);
+        total: 50,
+        limit: 10,
+        totalPages: 5,
+      };
+      vi.mocked(StudentContext.useStudents).mockReturnValue(
+        createMockStudentContext({
+          students: mockStudents,
+          meta: mockMeta,
+          page: 2,
+          setLimit: setLimitMock,
+        }),
+      );
 
       renderHome();
       const select = screen.getByLabelText(/Por página:/);
@@ -419,28 +317,19 @@ describe("Home", () => {
     });
 
     it("should display grid layout for student cards", () => {
-      vi.mocked(StudentContext.useStudents).mockReturnValue({
-        students: mockStudents,
-        meta: mockMeta,
-        page: 1,
-        limit: 12,
-        setPage: vi.fn(),
-        setLimit: vi.fn(),
-        isLoading: false,
-        error: undefined,
-        addStudent: vi.fn(),
-        refreshStudents: vi.fn(),
-      } as unknown as StudentContextType);
+      vi.mocked(StudentContext.useStudents).mockReturnValue(
+        createMockStudentContext({ students: mockStudents }),
+      );
 
       const { container } = renderHome();
-      const gridContainers = container.querySelectorAll(".grid");
-      const gridContainer = gridContainers[1]; // O segundo grid é o de cards
+      const gridContainer = container.querySelector(".grid");
 
       expect(gridContainer).toBeInTheDocument();
-      expect(gridContainer).toHaveClass("grid");
-      expect(gridContainer).toHaveClass("grid-cols-1");
-      expect(gridContainer).toHaveClass("lg:grid-cols-2");
-      expect(gridContainer).toHaveClass("xl:grid-cols-3");
+      expect(gridContainer).toHaveClass(
+        "grid-cols-1",
+        "lg:grid-cols-2",
+        "xl:grid-cols-3",
+      );
     });
   });
 });
