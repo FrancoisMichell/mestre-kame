@@ -6,6 +6,14 @@ import { apiClient } from "../../api/client";
 import { beltOptions, beltConfigs } from "./beltConfig";
 import { useNavigate, useParams } from "react-router-dom";
 import { useStudents } from "./StudentContext";
+import { Skeleton } from "../common/Skeleton";
+import FormInput from "../common/FormInput";
+import Button from "../common/Button";
+import ErrorMessage from "../common/ErrorMessage";
+import { validateStudent } from "../../utils/validation";
+import { handleError, formatErrorForUser } from "../../utils/errorHandler";
+import { toast } from "sonner";
+import { ConfirmDialog } from "../common/ConfirmDialog";
 
 const StudentEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,6 +23,10 @@ const StudentEdit: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [student, setStudent] = useState<Student | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const [name, setName] = useState("");
   const [registry, setRegistry] = useState("");
@@ -40,8 +52,10 @@ const StudentEdit: React.FC = () => {
         setBelt(studentData.belt);
         setIsActive(studentData.isActive);
       } catch (err) {
-        console.error("Error fetching student:", err);
-        setError("Erro ao carregar dados do estudante.");
+        const appError = handleError(err);
+        const errorMessage = formatErrorForUser(appError);
+        setError(errorMessage);
+        toast.error(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -54,9 +68,24 @@ const StudentEdit: React.FC = () => {
     e.preventDefault();
     if (!id) return;
 
+    // Valida todos os campos
+    const validation = validateStudent({
+      name,
+      registry,
+      belt,
+      birthday,
+      trainingSince,
+    });
+
+    if (!validation.isValid) {
+      setValidationErrors(validation.errors);
+      return;
+    }
+
     try {
       setIsSaving(true);
       setError(null);
+      setValidationErrors({});
 
       const updatedStudent = {
         name,
@@ -73,10 +102,13 @@ const StudentEdit: React.FC = () => {
       );
 
       await refreshStudents();
+      toast.success("Aluno atualizado com sucesso!");
       navigate("/");
     } catch (err) {
-      console.error("Error updating student:", err);
-      setError("Erro ao salvar dados do estudante.");
+      const appError = handleError(err);
+      const errorMessage = formatErrorForUser(appError);
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsSaving(false);
     }
@@ -86,10 +118,60 @@ const StudentEdit: React.FC = () => {
     navigate("/");
   };
 
+  const handleDelete = async () => {
+    if (!id) return;
+
+    try {
+      await apiClient.delete(ENDPOINTS.STUDENTS.DELETE(id));
+      toast.success("Aluno excluído com sucesso!");
+      await refreshStudents();
+      navigate("/");
+    } catch (err) {
+      const appError = handleError(err);
+      const errorMessage = formatErrorForUser(appError);
+      toast.error(errorMessage);
+      throw err; // Propaga o erro para o ConfirmDialog manter o modal aberto
+    }
+  };
+
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="container mx-auto px-4 pt-24 pb-8 max-w-2xl">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <Skeleton width="60%" height={32} className="mb-6" />
+
+          <div className="space-y-4">
+            <div>
+              <Skeleton width={60} height={16} className="mb-2" />
+              <Skeleton height={40} />
+            </div>
+            <div>
+              <Skeleton width={80} height={16} className="mb-2" />
+              <Skeleton height={40} />
+            </div>
+            <div>
+              <Skeleton width={100} height={16} className="mb-2" />
+              <Skeleton height={40} />
+            </div>
+            <div>
+              <Skeleton width={120} height={16} className="mb-2" />
+              <Skeleton height={40} />
+            </div>
+            <div>
+              <Skeleton width={50} height={16} className="mb-2" />
+              <Skeleton height={40} />
+            </div>
+            <div>
+              <Skeleton width={70} height={16} className="mb-2" />
+              <Skeleton height={24} width={100} />
+            </div>
+
+            <div className="flex gap-4 pt-4">
+              <Skeleton height={40} className="flex-1" />
+              <Skeleton height={40} className="flex-1" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -97,15 +179,14 @@ const StudentEdit: React.FC = () => {
   if (!student) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          Estudante não encontrado
-        </div>
-        <button
+        <ErrorMessage message="Estudante não encontrado" />
+        <Button
           onClick={() => navigate("/")}
-          className="mt-4 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+          variant="secondary"
+          className="mt-4"
         >
           Voltar
-        </button>
+        </Button>
       </div>
     );
   }
@@ -117,47 +198,57 @@ const StudentEdit: React.FC = () => {
           Editar Estudante
         </h1>
 
-        {error && (
-          <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            {error}
-          </div>
-        )}
+        {error && <ErrorMessage message={error} className="mb-4" />}
 
         <form onSubmit={handleSubmit}>
-          {/* Nome */}
-          <div className="mb-4">
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Nome *
-            </label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="text-gray-900 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          <FormInput
+            id="name"
+            name="name"
+            label="Nome"
+            type="text"
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+              if (validationErrors.name) {
+                const newErrors = { ...validationErrors };
+                delete newErrors.name;
+                setValidationErrors(newErrors);
+              }
+            }}
+            required
+            className="mb-4"
+          />
+          {validationErrors.name && (
+            <ErrorMessage
+              type="error"
+              message={validationErrors.name}
+              className="mb-4"
             />
-          </div>
+          )}
 
-          {/* Matrícula */}
-          <div className="mb-4">
-            <label
-              htmlFor="registry"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Matrícula
-            </label>
-            <input
-              type="text"
-              id="registry"
-              value={registry}
-              onChange={(e) => setRegistry(e.target.value)}
-              className="text-gray-900 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          <FormInput
+            id="registry"
+            name="registry"
+            label="Matrícula"
+            type="text"
+            value={registry}
+            onChange={(e) => {
+              setRegistry(e.target.value);
+              if (validationErrors.registry) {
+                const newErrors = { ...validationErrors };
+                delete newErrors.registry;
+                setValidationErrors(newErrors);
+              }
+            }}
+            className="mb-4"
+          />
+          {validationErrors.registry && (
+            <ErrorMessage
+              type="error"
+              message={validationErrors.registry}
+              className="mb-4"
             />
-          </div>
+          )}
 
           {/* Faixa */}
           <div className="mb-4">
@@ -170,7 +261,14 @@ const StudentEdit: React.FC = () => {
             <select
               id="belt"
               value={belt}
-              onChange={(e) => setBelt(e.target.value as Belt)}
+              onChange={(e) => {
+                setBelt(e.target.value as Belt);
+                if (validationErrors.belt) {
+                  const newErrors = { ...validationErrors };
+                  delete newErrors.belt;
+                  setValidationErrors(newErrors);
+                }
+              }}
               required
               className="text-gray-900 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
@@ -180,41 +278,62 @@ const StudentEdit: React.FC = () => {
                 </option>
               ))}
             </select>
+            {validationErrors.belt && (
+              <ErrorMessage
+                type="error"
+                message={validationErrors.belt}
+                className="mt-2"
+              />
+            )}
           </div>
 
-          {/* Data de Nascimento */}
-          <div className="mb-4">
-            <label
-              htmlFor="birthday"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Data de Nascimento
-            </label>
-            <input
-              type="date"
-              id="birthday"
-              value={birthday}
-              onChange={(e) => setBirthday(e.target.value)}
-              className="text-gray-900 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          <FormInput
+            id="birthday"
+            name="birthday"
+            label="Data de Nascimento"
+            type="date"
+            value={birthday}
+            onChange={(e) => {
+              setBirthday(e.target.value);
+              if (validationErrors.birthday) {
+                const newErrors = { ...validationErrors };
+                delete newErrors.birthday;
+                setValidationErrors(newErrors);
+              }
+            }}
+            className="mb-4"
+          />
+          {validationErrors.birthday && (
+            <ErrorMessage
+              type="error"
+              message={validationErrors.birthday}
+              className="mb-4"
             />
-          </div>
+          )}
 
-          {/* Treina Desde */}
-          <div className="mb-4">
-            <label
-              htmlFor="trainingSince"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Treina Desde
-            </label>
-            <input
-              type="date"
-              id="trainingSince"
-              value={trainingSince}
-              onChange={(e) => setTrainingSince(e.target.value)}
-              className="text-gray-900 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          <FormInput
+            id="trainingSince"
+            name="trainingSince"
+            label="Treina Desde"
+            type="date"
+            value={trainingSince}
+            onChange={(e) => {
+              setTrainingSince(e.target.value);
+              if (validationErrors.trainingSince) {
+                const newErrors = { ...validationErrors };
+                delete newErrors.trainingSince;
+                setValidationErrors(newErrors);
+              }
+            }}
+            className="mb-4"
+          />
+          {validationErrors.trainingSince && (
+            <ErrorMessage
+              type="error"
+              message={validationErrors.trainingSince}
+              className="mb-4"
             />
-          </div>
+          )}
 
           {/* Status */}
           <div className="mb-6">
@@ -242,25 +361,53 @@ const StudentEdit: React.FC = () => {
           </div> */}
 
           {/* Botões */}
-          <div className="flex gap-4">
-            <button
-              type="submit"
-              disabled={isSaving}
-              className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSaving ? "Salvando..." : "Salvar Alterações"}
-            </button>
-            <button
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-4">
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={isSaving}
+                loading={isSaving}
+                className="flex-1"
+              >
+                Salvar Alterações
+              </Button>
+              <Button
+                type="button"
+                onClick={handleCancel}
+                variant="secondary"
+                disabled={isSaving}
+                className="flex-1"
+              >
+                Cancelar
+              </Button>
+            </div>
+
+            {/* Botão de exclusão */}
+            <Button
               type="button"
-              onClick={handleCancel}
+              onClick={() => setShowDeleteConfirm(true)}
+              variant="danger"
               disabled={isSaving}
-              className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full"
             >
-              Cancelar
-            </button>
+              Excluir Aluno
+            </Button>
           </div>
         </form>
       </div>
+
+      {/* Modal de confirmação de exclusão */}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDelete}
+        title="Excluir Aluno"
+        message={`Tem certeza que deseja excluir o aluno ${name}? Esta ação não pode ser desfeita.`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+      />
     </div>
   );
 };
