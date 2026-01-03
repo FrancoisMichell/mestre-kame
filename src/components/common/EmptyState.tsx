@@ -35,12 +35,12 @@ const EmptyState: React.FC<EmptyStateProps> = ({
       </div>
 
       {/* Título principal */}
-      <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">
+      <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
         {title}
       </h3>
 
       {/* Descrição detalhada */}
-      <p className="text-sm md:text-base text-gray-500 max-w-md mb-4 md:mb-6 leading-relaxed">
+      <p className="text-sm md:text-base text-gray-700 dark:text-gray-300 max-w-md mb-4 md:mb-6 leading-relaxed">
         {description}
       </p>
 
@@ -52,7 +52,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
               onClick={action.onClick}
               variant={action.variant || "primary"}
             >
-              {action.icon && <span className="mr-2">{action.icon}</span>}
+              {action.icon}
               {action.label}
             </Button>
           )}
@@ -61,9 +61,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
               onClick={secondaryAction.onClick}
               variant={secondaryAction.variant || "ghost"}
             >
-              {secondaryAction.icon && (
-                <span className="mr-2">{secondaryAction.icon}</span>
-              )}
+              {secondaryAction.icon}
               {secondaryAction.label}
             </Button>
           )}
