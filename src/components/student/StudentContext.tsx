@@ -8,6 +8,8 @@ import {
 import type { Student } from "./StudentTypes";
 import type { PaginationMeta } from "../../types/api";
 import { useFetchStudents, useAddStudent } from "../../api/hooks";
+import { useDebounce } from "../../hooks/useDebounce";
+import { useResponsiveLimit } from "../../hooks/useResponsiveLimit";
 
 export interface StudentContextType {
   students: Student[];
@@ -16,10 +18,18 @@ export interface StudentContextType {
   limit: number;
   sortBy: string;
   sortOrder: string;
+  searchName: string;
+  searchRegistry: string;
+  filterBelt: string;
+  filterIsActive: string;
   setPage: (page: number) => void;
   setLimit: (limit: number) => void;
   setSortBy: (sortBy: string) => void;
   setSortOrder: (sortOrder: string) => void;
+  setSearchName: (name: string) => void;
+  setSearchRegistry: (registry: string) => void;
+  setFilterBelt: (belt: string) => void;
+  setFilterIsActive: (isActive: string) => void;
   addStudent: (student: Student) => Promise<void>;
   refreshStudents: () => Promise<void>;
   isLoading: boolean;
@@ -31,10 +41,23 @@ const StudentContext = createContext<StudentContextType | undefined>(undefined);
 export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const responsiveLimit = useResponsiveLimit();
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(12);
+  // Inicializa com o valor responsivo, mas permite mudança manual
+  const [limit, setLimit] = useState(() => responsiveLimit);
   const [sortBy, setSortBy] = useState("name");
   const [sortOrder, setSortOrder] = useState("ASC");
+
+  // Estados para os inputs (atualizados imediatamente)
+  const [searchNameInput, setSearchNameInput] = useState("");
+  const [searchRegistryInput, setSearchRegistryInput] = useState("");
+
+  const [filterBelt, setFilterBelt] = useState("");
+  const [filterIsActive, setFilterIsActive] = useState("");
+
+  // Debounce automático usando custom hook
+  const searchName = useDebounce(searchNameInput, 500);
+  const searchRegistry = useDebounce(searchRegistryInput, 500);
 
   const {
     students: apiStudents,
@@ -47,6 +70,10 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
     limit,
     sortBy: sortBy as "name" | "registry" | "belt" | "createdAt",
     sortOrder: sortOrder as "ASC" | "DESC",
+    name: searchName || undefined,
+    registry: searchRegistry || undefined,
+    belt: filterBelt || undefined,
+    isActive: filterIsActive ? filterIsActive === "true" : undefined,
   });
   // Removido localStudents, usa diretamente apiStudents
   const addStudentAPI = useAddStudent();
@@ -73,6 +100,24 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
     setPage(1); // Reset para primeira página ao mudar o limite
   }, []);
 
+  const handleSetSearchName = useCallback((name: string) => {
+    setSearchNameInput(name); // Atualiza o input imediatamente
+  }, []);
+
+  const handleSetSearchRegistry = useCallback((registry: string) => {
+    setSearchRegistryInput(registry); // Atualiza o input imediatamente
+  }, []);
+
+  const handleSetFilterBelt = useCallback((belt: string) => {
+    setFilterBelt(belt);
+    setPage(1); // Reset para primeira página ao filtrar
+  }, []);
+
+  const handleSetFilterIsActive = useCallback((isActive: string) => {
+    setFilterIsActive(isActive);
+    setPage(1); // Reset para primeira página ao filtrar
+  }, []);
+
   // Memoizar o valor do contexto para evitar re-renders desnecessários
   const contextValue = useMemo(
     () => ({
@@ -82,10 +127,18 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
       limit,
       sortBy,
       sortOrder,
+      searchName: searchNameInput, // Retorna o valor do input para os componentes
+      searchRegistry: searchRegistryInput, // Retorna o valor do input para os componentes
+      filterBelt,
+      filterIsActive,
       setPage,
       setLimit: handleSetLimit,
       setSortBy,
       setSortOrder,
+      setSearchName: handleSetSearchName,
+      setSearchRegistry: handleSetSearchRegistry,
+      setFilterBelt: handleSetFilterBelt,
+      setFilterIsActive: handleSetFilterIsActive,
       addStudent,
       refreshStudents,
       isLoading,
@@ -98,7 +151,15 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
       limit,
       sortBy,
       sortOrder,
+      searchNameInput,
+      searchRegistryInput,
+      filterBelt,
+      filterIsActive,
       handleSetLimit,
+      handleSetSearchName,
+      handleSetSearchRegistry,
+      handleSetFilterBelt,
+      handleSetFilterIsActive,
       addStudent,
       refreshStudents,
       isLoading,

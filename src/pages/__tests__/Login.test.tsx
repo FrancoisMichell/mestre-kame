@@ -7,6 +7,17 @@ import Login from "../Login";
 import { AuthProvider } from "../../components/auth/AuthContext";
 import apiClient from "../../api/client";
 
+// Mock do Sonner
+vi.mock("sonner", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+  },
+  Toaster: () => null,
+}));
+
 // Mock do apiClient
 vi.mock("../../api/client");
 

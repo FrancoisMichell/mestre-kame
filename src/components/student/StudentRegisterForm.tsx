@@ -4,6 +4,12 @@ import { type Student, type NewStudent } from "./StudentTypes";
 import { useNavigate } from "react-router-dom";
 import { useStudents } from "./StudentContext";
 import { beltOptions, beltConfigs } from "./beltConfig";
+import FormInput from "../common/FormInput";
+import Button from "../common/Button";
+import ErrorMessage from "../common/ErrorMessage";
+import { validateStudent } from "../../utils/validation";
+import { SUCCESS_MESSAGES } from "../../constants/messages";
+import { toast } from "sonner";
 
 const initialFormData: NewStudent = {
   name: "",
@@ -12,6 +18,7 @@ const initialFormData: NewStudent = {
 
 const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState<NewStudent>(initialFormData);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const { addStudent } = useStudents();
   const navigate = useNavigate();
 
@@ -23,10 +30,34 @@ const RegisterForm: React.FC = () => {
       ...prevData,
       [name]: value,
     }));
+
+    // Limpa erro do campo quando usuário começa a digitar
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+
+    // Valida todos os campos
+    const validation = validateStudent({
+      name: formData.name,
+      registry: formData.registry,
+      belt: formData.belt,
+      birthday: formData.birthday,
+      trainingSince: formData.trainingSince,
+    });
+
+    if (!validation.isValid) {
+      setErrors(validation.errors);
+      return;
+    }
+
     const finalStudentData: Student = {
       name: formData.name,
       registry: formData.registry,
@@ -38,7 +69,8 @@ const RegisterForm: React.FC = () => {
     addStudent(finalStudentData);
 
     setFormData(initialFormData);
-    alert(`Aluno ${formData.name} cadastrado com sucesso!`);
+    setErrors({});
+    toast.success(SUCCESS_MESSAGES.STUDENT_CREATED);
     navigate("/");
   };
 
@@ -52,77 +84,74 @@ const RegisterForm: React.FC = () => {
           Novo aluno
         </h2>
 
-        <div className="mb-5">
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            {" "}
-            Nome completo{" "}
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="text-gray-900 w-full border border-gray-300 p-3 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
-            placeholder="Ex: João das Neves"
+        <FormInput
+          id="name"
+          name="name"
+          label="Nome completo"
+          type="text"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="Ex: João das Neves"
+          required
+          className="mb-5"
+        />
+        {errors.name && (
+          <ErrorMessage type="error" message={errors.name} className="mb-4" />
+        )}
+
+        <FormInput
+          id="registry"
+          name="registry"
+          label="Matrícula"
+          type="text"
+          value={formData.registry}
+          onChange={handleChange}
+          placeholder="00PE003920"
+          className="mb-5"
+        />
+        {errors.registry && (
+          <ErrorMessage
+            type="error"
+            message={errors.registry}
+            className="mb-4"
           />
-        </div>
-        {/* Matrícula */}
-        <div className="mb-5">
-          <label
-            htmlFor="registry"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Matrícula
-          </label>
-          <input
-            type="text"
-            id="registry"
-            name="registry"
-            value={formData.registry}
-            onChange={handleChange}
-            className="text-gray-900 w-full border border-gray-300 p-3 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
-            placeholder="00PE003920"
-          />
-        </div>
+        )}
 
         {/* Datas (Birthday e TrainingSince) */}
         <div className="flex flex-wrap gap-4 mb-6">
-          <div className="flex-1" style={{ minWidth: "200px" }}>
-            <label
-              htmlFor="birthday"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Data de Nascimento
-            </label>
-            <input
-              type="date"
+          <div className="flex-1">
+            <FormInput
               id="birthday"
               name="birthday"
+              label="Data de Nascimento"
+              type="date"
               value={formData.birthday}
               onChange={handleChange}
-              className="text-gray-900 w-full border border-gray-300 p-3 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
             />
+            {errors.birthday && (
+              <ErrorMessage
+                type="error"
+                message={errors.birthday}
+                className="mt-2"
+              />
+            )}
           </div>
-          <div className="flex-1" style={{ minWidth: "200px" }}>
-            <label
-              htmlFor="trainingSince"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Treinando Desde
-            </label>
-            <input
-              type="date"
+          <div className="flex-1">
+            <FormInput
               id="trainingSince"
               name="trainingSince"
+              label="Treinando Desde"
+              type="date"
               value={formData.trainingSince}
               onChange={handleChange}
-              className="text-gray-900 w-full border border-gray-300 p-3 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
             />
+            {errors.trainingSince && (
+              <ErrorMessage
+                type="error"
+                message={errors.trainingSince}
+                className="mt-2"
+              />
+            )}
           </div>
         </div>
 
@@ -148,15 +177,15 @@ const RegisterForm: React.FC = () => {
               </option>
             ))}
           </select>
+          {errors.belt && (
+            <ErrorMessage type="error" message={errors.belt} className="mt-2" />
+          )}
         </div>
 
         {/* Botão de Submissão */}
-        <button
-          type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-150 shadow-md"
-        >
+        <Button type="submit" variant="primary" fullWidth>
           Cadastrar Aluno
-        </button>
+        </Button>
       </form>
     </div>
   );

@@ -1,10 +1,21 @@
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { BrowserRouter } from "react-router-dom";
 import Login from "../Login";
 import { AuthProvider } from "../../components/auth/AuthContext";
 import type { ReactNode } from "react";
+
+// Mock do Sonner
+vi.mock("sonner", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+  },
+  Toaster: () => null,
+}));
 
 // Componente wrapper customizado para simular sessão expirada
 const AuthProviderWithExpiredSession = ({

@@ -1,8 +1,12 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
 import type React from "react";
 import { useNavigate } from "react-router-dom";
 import type { LoginCredentials } from "../components/auth/AuthTypes";
 import { useAuth } from "../components/auth/AuthContext";
+import FormInput from "../components/common/FormInput";
+import Button from "../components/common/Button";
+import ErrorMessage from "../components/common/ErrorMessage";
+import { toast } from "sonner";
 
 const Login: React.FC = () => {
   const [credentials, setCredentials] = useState<LoginCredentials>({
@@ -15,6 +19,13 @@ const Login: React.FC = () => {
 
   // A mensagem de erro exibida é sessionExpiredMessage ou erro local
   const displayError = sessionExpiredMessage || error;
+
+  // Exibe toast quando sessão expirar
+  useEffect(() => {
+    if (sessionExpiredMessage) {
+      toast.warning(sessionExpiredMessage);
+    }
+  }, [sessionExpiredMessage]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -31,10 +42,11 @@ const Login: React.FC = () => {
       navigate("/");
     } catch (err) {
       const error = err as { response?: { data?: { message?: string } } };
-      setError(
+      const errorMessage =
         error.response?.data?.message ||
-          "Erro ao fazer login. Tente novamente.",
-      );
+        "Erro ao fazer login. Tente novamente.";
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   };
 
@@ -49,75 +61,51 @@ const Login: React.FC = () => {
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Matrícula Input */}
-          <div className="mb-5">
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Matrícula
-            </label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={credentials.username}
-              onChange={handleChange}
-              required
-              className="text-gray-900 w-full border border-gray-300 p-3 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
-              placeholder="Ex: 01AA123123"
-              autoComplete="username"
-            />
-          </div>
+          <FormInput
+            id="username"
+            name="username"
+            label="Matrícula"
+            type="text"
+            value={credentials.username}
+            onChange={handleChange}
+            placeholder="Ex: 01AA123123"
+            autoComplete="username"
+            required
+            className="mb-5"
+          />
 
-          {/* Password Input */}
-          <div className="mb-6">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Senha
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={credentials.password}
-              onChange={handleChange}
-              required
-              className="text-gray-900 w-full border border-gray-300 p-3 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
-              placeholder="********"
-              autoComplete="current-password"
-            />
-          </div>
+          <FormInput
+            id="password"
+            name="password"
+            label="Senha"
+            type="password"
+            value={credentials.password}
+            onChange={handleChange}
+            placeholder="********"
+            autoComplete="current-password"
+            required
+            className="mb-6"
+          />
 
           {/* Error Message */}
           {displayError && (
-            <div
-              className={`mb-4 border px-4 py-3 rounded ${
-                sessionExpiredMessage
-                  ? "bg-yellow-100 border-yellow-400 text-yellow-800"
-                  : "bg-red-100 border-red-400 text-red-700"
-              }`}
-            >
-              <p className="text-sm">{displayError}</p>
-            </div>
+            <ErrorMessage
+              message={displayError}
+              type={sessionExpiredMessage ? "warning" : "error"}
+              className="mb-4"
+            />
           )}
 
           {/* Submit Button */}
-          <button
+          <Button
             type="submit"
+            variant="primary"
+            fullWidth
+            loading={isLoading}
             disabled={isLoading}
-            className="w-full bg-blue-600 text-white font-semibold py-3 rounded-md hover:bg-blue-700 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? (
-              <div className="flex justify-center items-center">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-              </div>
-            ) : (
-              "Entrar"
-            )}
-          </button>
+            Entrar
+          </Button>
         </form>
 
         {/* Footer */}

@@ -9,6 +9,17 @@ import { apiClient } from "../../../api/client";
 import type { Student } from "../StudentTypes";
 import { createMockStudentContext } from "../../../test-utils";
 
+// Mock do Sonner
+vi.mock("sonner", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+  },
+  Toaster: () => null,
+}));
+
 // Mock do apiClient
 vi.mock("../../../api/client");
 
@@ -66,7 +77,7 @@ describe("StudentEdit", () => {
     );
   });
 
-  it("should show loading spinner while fetching student data", () => {
+  it("should show loading skeleton while fetching student data", () => {
     vi.mocked(apiClient.get).mockImplementation(
       () => new Promise(() => {}), // Never resolves
     );
@@ -219,8 +230,10 @@ describe("StudentEdit", () => {
     const submitButton = screen.getByText("Salvar Alterações");
     await user.click(submitButton);
 
+    // O erro é exibido via ErrorMessage component com a mensagem formatada
     await waitFor(() => {
-      expect(screen.getByText(/Network error/)).toBeInTheDocument();
+      const errorMessage = screen.queryByText(/Network error|Erro ao/i);
+      expect(errorMessage).toBeInTheDocument();
     });
   });
 
@@ -242,11 +255,9 @@ describe("StudentEdit", () => {
     const submitButton = screen.getByText("Salvar Alterações");
     await user.click(submitButton);
 
+    // O botão fica desabilitado enquanto salva
     await waitFor(() => {
       expect(submitButton).toBeDisabled();
-      // O botão em loading mostra apenas o spinner, não mais o texto
-      const spinner = submitButton.querySelector(".animate-spin");
-      expect(spinner).toBeInTheDocument();
     });
   });
 

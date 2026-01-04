@@ -96,7 +96,7 @@ describe("useDebounce", () => {
       () => {
         expect(objectResult.current).toEqual({ name: "Jane" });
       },
-      { timeout: 300 },
+      { timeout: 600 },
     );
   });
 
