@@ -7,7 +7,7 @@ import StudentEdit from "../StudentEdit";
 import * as StudentContext from "../StudentContext";
 import { apiClient } from "../../../api/client";
 import type { Student } from "../StudentTypes";
-import type { StudentContextType } from "../StudentContext";
+import { createMockStudentContext } from "../../../test-utils";
 
 // Mock do Sonner
 vi.mock("sonner", () => ({
@@ -69,18 +69,12 @@ describe("StudentEdit", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    vi.mocked(StudentContext.useStudents).mockReturnValue({
-      students: [mockStudent],
-      meta: undefined,
-      isLoading: false,
-      error: undefined,
-      addStudent: vi.fn(),
-      refreshStudents: mockRefreshStudents,
-      page: 1,
-      limit: 12,
-      setPage: vi.fn(),
-      setLimit: vi.fn(),
-    } as unknown as StudentContextType);
+    vi.mocked(StudentContext.useStudents).mockReturnValue(
+      createMockStudentContext({
+        students: [mockStudent],
+        refreshStudents: mockRefreshStudents,
+      }),
+    );
   });
 
   it("should show loading skeleton while fetching student data", () => {

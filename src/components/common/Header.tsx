@@ -1,15 +1,11 @@
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { useToggle } from "../../hooks/useToggle";
 
 const Header = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileMenuOpen, toggleMenu, , closeMobileMenu] = useToggle(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-
-  const toggleMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
 
   const handleLogout = () => {
     logout();
@@ -93,14 +89,14 @@ const Header = () => {
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
           <Link
             to="/"
-            onClick={toggleMenu}
+            onClick={closeMobileMenu}
             className="block text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-base font-medium"
           >
             Lista de Alunos
           </Link>
           <Link
             to="/cadastro"
-            onClick={toggleMenu}
+            onClick={closeMobileMenu}
             className="block text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-base font-medium"
           >
             Cadastro
@@ -119,7 +115,7 @@ const Header = () => {
               <button
                 onClick={() => {
                   handleLogout();
-                  toggleMenu();
+                  closeMobileMenu();
                 }}
                 className="block w-full text-left text-red-600 hover:bg-red-50 hover:text-red-700 px-3 py-2 rounded-md text-base font-medium"
               >
