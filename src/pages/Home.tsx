@@ -1,10 +1,12 @@
-// import { useEffect, useState } from "react";
-
-// import axios from "axios";
 import StudentCard from "../components/student/StudentCard";
 import { useStudents } from "../components/student/StudentContext";
+import { StudentCardSkeleton } from "../components/student/StudentCardSkeleton";
+import ErrorMessage from "../components/common/ErrorMessage";
+import EmptyState from "../components/common/EmptyState";
+import { useNavigate } from "react-router-dom";
 
 const Home: React.FC = () => {
+  const navigate = useNavigate();
   const {
     students,
     meta,
@@ -20,28 +22,23 @@ const Home: React.FC = () => {
     error,
   } = useStudents();
 
-  const containerClass =
-    "pt-20 md:pt-24 flex flex-col gap-2 md:gap-4 px-4 md:px-5 py-3 max-w-6xl mx-auto";
-  const headerClass =
-    "text-2xl md:text-3xl font-bold mb-3 md:mb-6 text-red-900 text-center";
-
   const content = () => {
     if (isLoading) {
       return (
-        <div className="flex justify-center items-center py-10">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-900"></div>
+        <div className="grid grid-cols-1 gap-3 md:gap-4">
+          {Array.from({ length: limit }).map((_, index) => (
+            <StudentCardSkeleton key={index} />
+          ))}
         </div>
       );
     }
 
     if (error) {
       return (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          <p className="font-bold">Erro ao carregar alunos</p>
-          <p className="text-sm">
-            {error?.message || "Tente novamente mais tarde"}
-          </p>
-        </div>
+        <ErrorMessage
+          title="Erro ao carregar alunos"
+          message={error?.message || "Tente novamente mais tarde"}
+        />
       );
     }
 
@@ -52,61 +49,128 @@ const Home: React.FC = () => {
         ))}
       </div>
     ) : (
-      <p className="text-gray-600 text-center py-10">
-        Nenhum aluno cadastrado.
-      </p>
+      <EmptyState
+        icon={
+          <svg
+            className="w-12 h-12"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+            />
+          </svg>
+        }
+        title="Nenhum aluno cadastrado ainda"
+        description="Comece cadastrando seu primeiro aluno para acompanhar o progresso no karatê. É rápido e fácil!"
+        action={{
+          label: "Cadastrar Primeiro Aluno",
+          onClick: () => navigate("/cadastro"),
+          icon: (
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+          ),
+        }}
+      />
     );
   };
   return (
-    <div className={containerClass}>
-      <h1 className={headerClass}>Lista de Alunos</h1>
+    <div className="pt-20 md:pt-24 px-4 md:px-5 py-3 max-w-6xl mx-auto">
+      {/* Card branco com todo o conteúdo */}
+      <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
+        {/* Título e Botão Novo Aluno */}
+        <div className="mb-6 flex items-center justify-center gap-4">
+          <h1 className="text-2xl font-bold text-gray-800">Lista de Alunos</h1>
+          <button
+            onClick={() => navigate("/cadastro")}
+            className="flex items-center justify-center gap-2 px-3 py-2.5 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors font-medium text-sm"
+            aria-label="Novo Aluno"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            <span className="hidden sm:inline">Novo Aluno</span>
+          </button>
+        </div>
 
-      {/* Controles de Ordenação */}
-      <div className="bg-white p-3 md:p-4 rounded-lg shadow-sm mb-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {/* Ordenar por */}
-          <div>
-            <label
-              htmlFor="sortBy"
-              className="block text-xs font-medium text-gray-700 mb-1.5"
-            >
-              Ordenar por
-            </label>
-            <select
-              id="sortBy"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
-              <option value="name">Nome</option>
-              <option value="registry">Matrícula</option>
-              <option value="belt">Faixa</option>
-              <option value="createdAt">Data de Cadastro</option>
-            </select>
-          </div>
+        {/* Seção de Ordenação */}
+        <div className="mb-4">
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h3 className="text-sm font-semibold text-gray-900 mb-3">
+              Ordenação
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              {/* Campo */}
+              <div>
+                <label
+                  htmlFor="sortBy"
+                  className="block text-xs font-medium text-gray-700 mb-1"
+                >
+                  Campo
+                </label>
+                <select
+                  id="sortBy"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500"
+                >
+                  <option value="name">Nome</option>
+                  <option value="registry">Matrícula</option>
+                  <option value="belt">Faixa</option>
+                  <option value="createdAt">Data de Cadastro</option>
+                </select>
+              </div>
 
-          {/* Direção */}
-          <div>
-            <label
-              htmlFor="sortOrder"
-              className="block text-xs font-medium text-gray-700 mb-1.5"
-            >
-              Direção
-            </label>
-            <select
-              id="sortOrder"
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
-              <option value="ASC">A → Z (Crescente)</option>
-              <option value="DESC">Z → A (Decrescente)</option>
-            </select>
+              {/* Ordem */}
+              <div>
+                <label
+                  htmlFor="sortOrder"
+                  className="block text-xs font-medium text-gray-700 mb-1"
+                >
+                  Ordem
+                </label>
+                <select
+                  id="sortOrder"
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500"
+                >
+                  <option value="ASC">Crescente</option>
+                  <option value="DESC">Decrescente</option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {content()}
+        {/* Conteúdo principal (loading, error, lista de alunos, empty states) */}
+        {content()}
+      </div>
 
       {/* Controles de Paginação */}
       {meta && (
