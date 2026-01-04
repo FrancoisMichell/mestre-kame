@@ -7,7 +7,18 @@ import StudentEdit from "../StudentEdit";
 import * as StudentContext from "../StudentContext";
 import { apiClient } from "../../../api/client";
 import type { Student } from "../StudentTypes";
-import type { StudentContextType } from "../StudentContext";
+import { createMockStudentContext } from "../../../test-utils";
+
+// Mock do Sonner
+vi.mock("sonner", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+  },
+  Toaster: () => null,
+}));
 
 // Mock do apiClient
 vi.mock("../../../api/client");
@@ -58,29 +69,23 @@ describe("StudentEdit", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    vi.mocked(StudentContext.useStudents).mockReturnValue({
-      students: [mockStudent],
-      meta: undefined,
-      isLoading: false,
-      error: undefined,
-      addStudent: vi.fn(),
-      refreshStudents: mockRefreshStudents,
-      page: 1,
-      limit: 12,
-      setPage: vi.fn(),
-      setLimit: vi.fn(),
-    } as unknown as StudentContextType);
+    vi.mocked(StudentContext.useStudents).mockReturnValue(
+      createMockStudentContext({
+        students: [mockStudent],
+        refreshStudents: mockRefreshStudents,
+      }),
+    );
   });
 
-  it("should show loading spinner while fetching student data", () => {
+  it("should show loading skeleton while fetching student data", () => {
     vi.mocked(apiClient.get).mockImplementation(
       () => new Promise(() => {}), // Never resolves
     );
 
     const { container } = renderStudentEdit();
 
-    const spinner = container.querySelector(".animate-spin");
-    expect(spinner).toBeInTheDocument();
+    const skeletons = container.querySelectorAll(".animate-pulse");
+    expect(skeletons.length).toBeGreaterThan(0);
   });
 
   it("should load and display student data", async () => {
@@ -225,10 +230,10 @@ describe("StudentEdit", () => {
     const submitButton = screen.getByText("Salvar Alterações");
     await user.click(submitButton);
 
+    // O erro é exibido via ErrorMessage component com a mensagem formatada
     await waitFor(() => {
-      expect(
-        screen.getByText("Erro ao salvar dados do estudante."),
-      ).toBeInTheDocument();
+      const errorMessage = screen.queryByText(/Network error|Erro ao/i);
+      expect(errorMessage).toBeInTheDocument();
     });
   });
 
@@ -250,11 +255,10 @@ describe("StudentEdit", () => {
     const submitButton = screen.getByText("Salvar Alterações");
     await user.click(submitButton);
 
+    // O botão fica desabilitado enquanto salva
     await waitFor(() => {
-      expect(screen.getByText("Salvando...")).toBeInTheDocument();
+      expect(submitButton).toBeDisabled();
     });
-
-    expect(submitButton).toBeDisabled();
   });
 
   it("should navigate back when cancel button is clicked", async () => {

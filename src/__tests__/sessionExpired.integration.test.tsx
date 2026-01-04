@@ -5,6 +5,17 @@ import Router from "../router";
 import { server } from "../api/mocks/server";
 import { http, HttpResponse } from "msw";
 
+// Mock do Sonner
+vi.mock("sonner", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+  },
+  Toaster: () => null,
+}));
+
 describe("Session Expired Integration Test", () => {
   beforeEach(() => {
     localStorage.clear();
@@ -59,7 +70,7 @@ describe("Session Expired Integration Test", () => {
     render(<Router />);
 
     await waitFor(() => {
-      expect(screen.getByLabelText("Matrícula")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("Ex: 01AA123123")).toBeInTheDocument();
     });
   });
 });
