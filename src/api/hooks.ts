@@ -1,5 +1,6 @@
 import useSWR from "swr";
 import type { Student } from "../components/student/StudentTypes";
+import type { Class } from "../components/class/ClassTypes";
 import type { PaginatedResponse } from "../types/api";
 import apiClient from "./client";
 import { ENDPOINTS } from "./endpoints";
@@ -60,5 +61,54 @@ export const useAddStudent = () => {
   return async (student: Student) => {
     const response = await apiClient.post(ENDPOINTS.STUDENTS.CREATE, student);
     return response.data;
+  };
+};
+
+// ==================== CLASSES HOOKS ====================
+
+export interface UseFetchClassesParams {
+  page?: number;
+  limit?: number;
+  sortBy?: "name" | "startTime" | "createdAt";
+  sortOrder?: "ASC" | "DESC";
+  name?: string;
+  isActive?: boolean;
+}
+
+export const useFetchClasses = (params?: UseFetchClassesParams) => {
+  const queryParams = new URLSearchParams();
+  if (params?.page) queryParams.append("page", params.page.toString());
+  if (params?.limit) queryParams.append("limit", params.limit.toString());
+  if (params?.sortBy) queryParams.append("sortBy", params.sortBy);
+  if (params?.sortOrder) queryParams.append("sortOrder", params.sortOrder);
+  if (params?.name) queryParams.append("name", params.name);
+  if (params?.isActive !== undefined)
+    queryParams.append("isActive", params.isActive.toString());
+
+  const url = queryParams.toString()
+    ? `${ENDPOINTS.CLASSES.LIST}?${queryParams.toString()}`
+    : ENDPOINTS.CLASSES.LIST;
+
+  // Só faz fetch se houver token de autenticação
+  const hasToken = !!localStorage.getItem("authToken");
+
+  const { data, error, isLoading, mutate } = useSWR<PaginatedResponse<Class>>(
+    hasToken ? url : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 5000,
+      keepPreviousData: true,
+      revalidateOnMount: true,
+    },
+  );
+
+  return {
+    classes: data?.data || [],
+    meta: data?.meta,
+    isLoading,
+    isError: !!error,
+    error,
+    mutate,
   };
 };

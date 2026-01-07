@@ -14,4 +14,7 @@ export const ENDPOINTS = {
     UPDATE: (id: string) => `/students/${id}`,
     DELETE: (id: string) => `/students/${id}`,
   },
+  CLASSES: {
+    LIST: "/classes",
+  },
 } as const;
