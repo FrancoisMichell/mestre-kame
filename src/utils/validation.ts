@@ -302,3 +302,128 @@ export const validateStudent = (data: {
     errors,
   };
 };
+
+/**
+ * Valida nome da turma
+ * - Mínimo 3 caracteres
+ * - Máximo 100 caracteres
+ */
+export const validateClassName = (name: string): ValidationResult => {
+  const requiredCheck = validateRequired(name, "Nome da turma");
+  if (!requiredCheck.isValid) {
+    return requiredCheck;
+  }
+
+  const trimmedName = name.trim();
+
+  if (trimmedName.length < 3) {
+    return {
+      isValid: false,
+      error: "Nome deve ter pelo menos 3 caracteres",
+    };
+  }
+
+  if (trimmedName.length > 100) {
+    return {
+      isValid: false,
+      error: "Nome deve ter no máximo 100 caracteres",
+    };
+  }
+
+  return { isValid: true };
+};
+
+/**
+ * Valida dias da semana selecionados
+ * - Pelo menos 1 dia deve ser selecionado
+ */
+export const validateDays = (days: number[]): ValidationResult => {
+  if (!days || days.length === 0) {
+    return {
+      isValid: false,
+      error: "Selecione pelo menos um dia da semana",
+    };
+  }
+
+  return { isValid: true };
+};
+
+/**
+ * Valida horário de início
+ * - Formato HH:MM
+ */
+export const validateStartTime = (startTime: string): ValidationResult => {
+  const requiredCheck = validateRequired(startTime, "Horário de início");
+  if (!requiredCheck.isValid) {
+    return requiredCheck;
+  }
+
+  const timePattern = /^([01]\d|2[0-3]):([0-5]\d)$/;
+  if (!timePattern.test(startTime)) {
+    return {
+      isValid: false,
+      error: "Horário inválido. Use o formato HH:MM",
+    };
+  }
+
+  return { isValid: true };
+};
+
+/**
+ * Valida duração da aula em minutos
+ * - Deve ser um número positivo
+ */
+export const validateDuration = (durationMinutes: number): ValidationResult => {
+  if (!durationMinutes || durationMinutes <= 0) {
+    return {
+      isValid: false,
+      error: "Duração da aula é obrigatória",
+    };
+  }
+
+  if (durationMinutes > 300) {
+    return {
+      isValid: false,
+      error: "Duração máxima é 5 horas (300 minutos)",
+    };
+  }
+
+  return { isValid: true };
+};
+
+/**
+ * Valida todos os campos de uma turma
+ */
+export const validateClass = (data: {
+  name: string;
+  days: number[];
+  startTime: string;
+  durationMinutes: number;
+}): { isValid: boolean; errors: Record<string, string> } => {
+  const errors: Record<string, string> = {};
+
+  const nameValidation = validateClassName(data.name);
+  if (!nameValidation.isValid && nameValidation.error) {
+    errors.name = nameValidation.error;
+  }
+
+  const daysValidation = validateDays(data.days);
+  if (!daysValidation.isValid && daysValidation.error) {
+    errors.days = daysValidation.error;
+  }
+
+  const startTimeValidation = validateStartTime(data.startTime);
+  if (!startTimeValidation.isValid && startTimeValidation.error) {
+    errors.startTime = startTimeValidation.error;
+  }
+
+  const durationValidation = validateDuration(data.durationMinutes);
+  if (!durationValidation.isValid && durationValidation.error) {
+    errors.durationMinutes = durationValidation.error;
+  }
+
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors,
+  };
+};
