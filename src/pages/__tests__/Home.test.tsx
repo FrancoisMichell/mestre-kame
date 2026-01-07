@@ -82,7 +82,7 @@ describe("Home", () => {
     vi.mocked(StudentContext.useStudents).mockReturnValue(createMockContext());
 
     renderHome();
-    expect(screen.getByText("Lista de Alunos")).toBeInTheDocument();
+    expect(screen.getByText("Alunos")).toBeInTheDocument();
   });
 
   it("should show loading skeletons when isLoading is true", () => {
@@ -181,7 +181,7 @@ describe("Home", () => {
     vi.mocked(StudentContext.useStudents).mockReturnValue(createMockContext());
 
     renderHome();
-    const header = screen.getByText("Lista de Alunos");
+    const header = screen.getByText("Alunos");
 
     expect(header).toHaveClass("text-2xl", "font-bold", "text-gray-800");
   });

@@ -158,8 +158,14 @@ export const handlers = [
           id: "1",
           name: "João das Neves",
           registry: "2024010",
-          email: "joao@email.com",
-          role: "student",
+          belt: "white",
+          isActive: true,
+          roles: [
+            {
+              id: "role-1",
+              role: "student",
+            },
+          ],
         },
       });
     }
@@ -171,8 +177,14 @@ export const handlers = [
           id: "2",
           name: "Administrador",
           registry: "admin",
-          email: "admin@mestrekame.com",
-          role: "admin",
+          belt: "black",
+          isActive: true,
+          roles: [
+            {
+              id: "role-2",
+              role: "teacher",
+            },
+          ],
         },
       });
     }

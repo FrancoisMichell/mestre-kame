@@ -15,8 +15,10 @@ export interface ClassContextType {
   meta?: PaginationMeta;
   page: number;
   limit: number;
+  includeInactive: boolean;
   setPage: (page: number) => void;
   setLimit: (limit: number) => void;
+  setIncludeInactive: (include: boolean) => void;
   refreshClasses: () => Promise<void>;
   isLoading: boolean;
   error?: Error;
@@ -30,6 +32,7 @@ export const ClassProvider: React.FC<{ children: React.ReactNode }> = ({
   const responsiveLimit = useResponsiveLimit();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(() => responsiveLimit);
+  const [includeInactive, setIncludeInactive] = useState(false);
 
   const {
     classes: apiClasses,
@@ -40,6 +43,7 @@ export const ClassProvider: React.FC<{ children: React.ReactNode }> = ({
   } = useFetchClasses({
     page,
     limit,
+    includeInactive,
   });
 
   const refreshClasses = useCallback(async () => {
@@ -57,8 +61,10 @@ export const ClassProvider: React.FC<{ children: React.ReactNode }> = ({
       meta,
       page,
       limit,
+      includeInactive,
       setPage,
       setLimit: handleSetLimit,
+      setIncludeInactive,
       refreshClasses,
       isLoading,
       error,
@@ -68,6 +74,7 @@ export const ClassProvider: React.FC<{ children: React.ReactNode }> = ({
       meta,
       page,
       limit,
+      includeInactive,
       handleSetLimit,
       refreshClasses,
       isLoading,

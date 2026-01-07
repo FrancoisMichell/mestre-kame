@@ -1,8 +1,19 @@
+export interface UserRole {
+  id: string;
+  role: string;
+}
+
 export interface User {
   id: string;
   name: string;
   registry: string;
-  role: "teacher" | "student";
+  belt?: string;
+  birthday?: string;
+  trainingSince?: string;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  roles: UserRole[];
 }
 
 export interface LoginCredentials {

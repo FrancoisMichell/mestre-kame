@@ -15,14 +15,7 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem }) => {
     <div className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow border border-gray-100">
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
-        <div className="flex-1">
-          <h3 className="text-lg font-bold text-gray-900 mb-1">
-            {classItem.name}
-          </h3>
-          <p className="text-sm text-gray-600">
-            Professor: {classItem.teacher.name}
-          </p>
-        </div>
+        <h3 className="text-lg font-bold text-gray-900">{classItem.name}</h3>
         <span
           className={`px-2 py-1 rounded-full text-xs font-medium ${statusColor}`}
         >

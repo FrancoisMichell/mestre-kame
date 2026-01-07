@@ -73,6 +73,7 @@ export interface UseFetchClassesParams {
   sortOrder?: "ASC" | "DESC";
   name?: string;
   isActive?: boolean;
+  includeInactive?: boolean;
 }
 
 export const useFetchClasses = (params?: UseFetchClassesParams) => {
@@ -84,6 +85,8 @@ export const useFetchClasses = (params?: UseFetchClassesParams) => {
   if (params?.name) queryParams.append("name", params.name);
   if (params?.isActive !== undefined)
     queryParams.append("isActive", params.isActive.toString());
+  if (params?.includeInactive !== undefined)
+    queryParams.append("includeInactive", params.includeInactive.toString());
 
   const url = queryParams.toString()
     ? `${ENDPOINTS.CLASSES.LIST}?${queryParams.toString()}`

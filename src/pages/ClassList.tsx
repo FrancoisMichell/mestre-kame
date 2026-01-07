@@ -6,8 +6,18 @@ import ErrorMessage from "../components/common/ErrorMessage";
 import EmptyState from "../components/common/EmptyState";
 
 const ClassList: React.FC = () => {
-  const { classes, meta, page, limit, setPage, setLimit, isLoading, error } =
-    useClasses();
+  const {
+    classes,
+    meta,
+    page,
+    limit,
+    includeInactive,
+    setPage,
+    setLimit,
+    setIncludeInactive,
+    isLoading,
+    error,
+  } = useClasses();
 
   const content = () => {
     if (isLoading) {
@@ -63,8 +73,23 @@ const ClassList: React.FC = () => {
       {/* Card branco com todo o conteúdo */}
       <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
         {/* Título */}
+        <div className="mb-4 flex items-center justify-center">
+          <h1 className="text-2xl font-bold text-gray-800">Turmas</h1>
+        </div>
+
+        {/* Filtro */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Lista de Turmas</h1>
+          <label className="flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={includeInactive}
+              onChange={(e) => setIncludeInactive(e.target.checked)}
+              className="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <span className="text-sm font-medium text-gray-700">
+              Incluir turmas inativas
+            </span>
+          </label>
         </div>
 
         {/* Conteúdo principal */}
@@ -72,7 +97,7 @@ const ClassList: React.FC = () => {
       </div>
 
       {/* Controles de Paginação */}
-      {meta && meta.totalPages > 1 && (
+      {meta && (
         <div className="flex flex-wrap items-center justify-between gap-3 mt-4 p-2.5 bg-gray-50 rounded-lg text-sm">
           {/* Info e Seletor de Itens */}
           <div className="flex flex-wrap items-center gap-3">
