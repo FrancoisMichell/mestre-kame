@@ -4,7 +4,7 @@ interface FormInputProps {
   id: string;
   name: string;
   label: string;
-  type?: "text" | "date" | "password" | "email" | "number";
+  type?: "text" | "date" | "password" | "email" | "number" | "time";
   value: string | undefined;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;

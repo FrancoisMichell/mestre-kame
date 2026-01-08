@@ -17,3 +17,9 @@ export interface Class {
   createdAt?: string;
   updatedAt?: string;
 }
+
+// Input type used by forms when creating a new class
+export type NewClass = Omit<
+  Class,
+  "id" | "isActive" | "createdAt" | "updatedAt"
+>;
