@@ -126,6 +126,7 @@ describe("ClassList", () => {
       total: 20,
       page: 1,
       totalPages: 2,
+      limit: 12,
     };
 
     vi.mocked(ClassContext.useClasses).mockReturnValue(
@@ -148,6 +149,7 @@ describe("ClassList", () => {
       total: 20,
       page: 1,
       totalPages: 2,
+      limit: 12,
     };
 
     vi.mocked(ClassContext.useClasses).mockReturnValue(
@@ -174,6 +176,7 @@ describe("ClassList", () => {
       total: 20,
       page: 2,
       totalPages: 2,
+      limit: 12,
     };
 
     vi.mocked(ClassContext.useClasses).mockReturnValue(
@@ -198,6 +201,7 @@ describe("ClassList", () => {
       total: 20,
       page: 1,
       totalPages: 2,
+      limit: 12,
     };
 
     vi.mocked(ClassContext.useClasses).mockReturnValue(
@@ -218,6 +222,7 @@ describe("ClassList", () => {
       total: 20,
       page: 2,
       totalPages: 2,
+      limit: 12,
     };
 
     vi.mocked(ClassContext.useClasses).mockReturnValue(
@@ -242,6 +247,7 @@ describe("ClassList", () => {
       total: 20,
       page: 1,
       totalPages: 2,
+      limit: 12,
     };
 
     vi.mocked(ClassContext.useClasses).mockReturnValue(

@@ -113,6 +113,7 @@ describe("ClassContext", () => {
       total: 20,
       page: 1,
       totalPages: 2,
+      limit: 12,
     };
 
     vi.mocked(useFetchClasses).mockReturnValue({
