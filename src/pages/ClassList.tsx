@@ -5,7 +5,6 @@ import { useClasses } from "../components/class/ClassContext";
 import { Skeleton } from "../components/common/Skeleton";
 import ErrorMessage from "../components/common/ErrorMessage";
 import EmptyState from "../components/common/EmptyState";
-import Button from "../components/common/Button";
 
 const ClassList: React.FC = () => {
   const navigate = useNavigate();
@@ -78,13 +77,26 @@ const ClassList: React.FC = () => {
         {/* Cabeçalho com Título e Botão */}
         <div className="mb-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-800">Turmas</h1>
-          <Button
-            variant="primary"
+          <button
             onClick={() => navigate("/turmas/nova")}
-            className="whitespace-nowrap"
+            className="flex items-center justify-center gap-2 px-3 py-2.5 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors font-medium text-sm whitespace-nowrap"
+            aria-label="Nova Turma"
           >
-            Nova Turma
-          </Button>
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            <span className="hidden sm:inline">Nova Turma</span>
+          </button>
         </div>
 
         {/* Filtro */}
