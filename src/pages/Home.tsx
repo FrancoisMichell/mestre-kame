@@ -95,7 +95,7 @@ const Home: React.FC = () => {
       <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
         {/* Título e Botão Novo Aluno */}
         <div className="mb-6 flex items-center justify-center gap-4">
-          <h1 className="text-2xl font-bold text-gray-800">Lista de Alunos</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Alunos</h1>
           <button
             onClick={() => navigate("/cadastro")}
             className="flex items-center justify-center gap-2 px-3 py-2.5 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors font-medium text-sm"

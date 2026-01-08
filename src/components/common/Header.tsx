@@ -32,7 +32,13 @@ const Header = () => {
               to="/"
               className="text-gray-600 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium transition duration-150"
             >
-              Lista de Alunos
+              Alunos
+            </Link>
+            <Link
+              to="/turmas"
+              className="text-gray-600 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium transition duration-150"
+            >
+              Turmas
             </Link>
             <Link
               to="/cadastro"
@@ -92,7 +98,14 @@ const Header = () => {
             onClick={closeMobileMenu}
             className="block text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-base font-medium"
           >
-            Lista de Alunos
+            Alunos
+          </Link>
+          <Link
+            to="/turmas"
+            onClick={closeMobileMenu}
+            className="block text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-base font-medium"
+          >
+            Turmas
           </Link>
           <Link
             to="/cadastro"

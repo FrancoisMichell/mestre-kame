@@ -44,9 +44,9 @@ describe("Header", () => {
     renderHeader();
     const desktopLinks = screen.getAllByRole("link");
 
-    // Find "Lista de Alunos" link
+    // Find "Alunos" link
     const listaLink = desktopLinks.find(
-      (link) => link.textContent === "Lista de Alunos",
+      (link) => link.textContent === "Alunos",
     );
     expect(listaLink).toBeInTheDocument();
     expect(listaLink).toHaveAttribute("href", "/");

@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
 import type { Student } from "../../components/student/StudentTypes";
+import type { Class } from "../../components/class/ClassTypes";
 
 const API_BASE_URL = "http://localhost:3000";
 
@@ -33,6 +34,48 @@ const mockStudents: Student[] = [
     registry: "987656",
     trainingSince: "2022-09-01",
     isActive: false,
+  },
+];
+
+const mockClasses: Class[] = [
+  {
+    id: "1",
+    name: "Iniciantes - 18h",
+    days: [1, 3, 5], // Segunda, Quarta, Sexta
+    startTime: "18:00",
+    durationMinutes: 60,
+    isActive: true,
+    teacher: {
+      id: "teacher-1",
+      name: "Sensei Yamamoto",
+      email: "yamamoto@mestrekame.com",
+    },
+  },
+  {
+    id: "2",
+    name: "Avançados - 19h",
+    days: [2, 4], // Terça, Quinta
+    startTime: "19:00",
+    durationMinutes: 90,
+    isActive: true,
+    teacher: {
+      id: "teacher-2",
+      name: "Sensei Tanaka",
+      email: "tanaka@mestrekame.com",
+    },
+  },
+  {
+    id: "3",
+    name: "Crianças - 16h",
+    days: [1, 2, 3, 4, 5], // Segunda a Sexta
+    startTime: "16:00",
+    durationMinutes: 45,
+    isActive: true,
+    teacher: {
+      id: "teacher-1",
+      name: "Sensei Yamamoto",
+      email: "yamamoto@mestrekame.com",
+    },
   },
 ];
 
@@ -115,8 +158,14 @@ export const handlers = [
           id: "1",
           name: "João das Neves",
           registry: "2024010",
-          email: "joao@email.com",
-          role: "student",
+          belt: "white",
+          isActive: true,
+          roles: [
+            {
+              id: "role-1",
+              role: "student",
+            },
+          ],
         },
       });
     }
@@ -128,8 +177,14 @@ export const handlers = [
           id: "2",
           name: "Administrador",
           registry: "admin",
-          email: "admin@mestrekame.com",
-          role: "admin",
+          belt: "black",
+          isActive: true,
+          roles: [
+            {
+              id: "role-2",
+              role: "teacher",
+            },
+          ],
         },
       });
     }
@@ -138,5 +193,18 @@ export const handlers = [
       { message: "Matrícula ou senha inválidos" },
       { status: 401 },
     );
+  }),
+
+  // ==================== CLASSES ====================
+  http.get(`${API_BASE_URL}/classes`, () => {
+    return HttpResponse.json({
+      data: mockClasses,
+      meta: {
+        total: mockClasses.length,
+        page: 1,
+        limit: 10,
+        totalPages: 1,
+      },
+    });
   }),
 ];
