@@ -291,7 +291,7 @@ const Home: React.FC = () => {
             <div
               className={`${showSort ? "block" : "hidden"} md:block px-3 pb-3 md:px-4 md:pb-4`}
             >
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Campo */}
                 <div>
                   <label
