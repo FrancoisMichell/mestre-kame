@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import ClassList from "./pages/ClassList";
+import ClassRegister from "./pages/ClassRegister";
 import type React from "react";
 import Header from "./components/common/Header";
 import RegisterForm from "./components/student/StudentRegisterForm";
@@ -77,6 +78,7 @@ const AppRoutes: React.FC = () => {
                   }
                   path="/turmas"
                 />
+                <Route element={<ClassRegister />} path="/turmas/nova" />
                 <Route
                   element={<h1>404 | Página não encontrada</h1>}
                   path="*"

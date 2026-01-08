@@ -1,11 +1,14 @@
 import type React from "react";
+import { useNavigate } from "react-router-dom";
 import ClassCard from "../components/class/ClassCard";
 import { useClasses } from "../components/class/ClassContext";
 import { Skeleton } from "../components/common/Skeleton";
 import ErrorMessage from "../components/common/ErrorMessage";
 import EmptyState from "../components/common/EmptyState";
+import Button from "../components/common/Button";
 
 const ClassList: React.FC = () => {
+  const navigate = useNavigate();
   const {
     classes,
     meta,
@@ -72,9 +75,16 @@ const ClassList: React.FC = () => {
     <div className="pt-20 md:pt-24 px-4 md:px-5 py-3 max-w-6xl mx-auto">
       {/* Card branco com todo o conteúdo */}
       <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
-        {/* Título */}
-        <div className="mb-4 flex items-center justify-center">
+        {/* Cabeçalho com Título e Botão */}
+        <div className="mb-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-800">Turmas</h1>
+          <Button
+            variant="primary"
+            onClick={() => navigate("/turmas/nova")}
+            className="whitespace-nowrap"
+          >
+            Nova Turma
+          </Button>
         </div>
 
         {/* Filtro */}
