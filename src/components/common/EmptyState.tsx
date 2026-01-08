@@ -30,17 +30,17 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   return (
     <div className="flex flex-col items-center justify-center py-12 md:py-16 px-4 text-center">
       {/* Ícone decorativo */}
-      <div className="w-20 h-20 md:w-24 md:h-24 mb-4 md:mb-6 rounded-full bg-blue-50 flex items-center justify-center">
-        <div className="text-blue-400">{icon}</div>
+      <div className="w-20 h-20 md:w-24 md:h-24 mb-4 md:mb-6 rounded-full bg-blue-100 flex items-center justify-center">
+        <div className="text-blue-700">{icon}</div>
       </div>
 
       {/* Título principal */}
-      <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+      <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-2">
         {title}
       </h3>
 
       {/* Descrição detalhada */}
-      <p className="text-sm md:text-base text-gray-700 dark:text-gray-300 max-w-md mb-4 md:mb-6 leading-relaxed">
+      <p className="text-sm md:text-base text-slate-700 max-w-md mb-4 md:mb-6 leading-relaxed">
         {description}
       </p>
 

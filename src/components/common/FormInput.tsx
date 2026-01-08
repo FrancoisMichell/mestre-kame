@@ -4,7 +4,7 @@ interface FormInputProps {
   id: string;
   name: string;
   label: string;
-  type?: "text" | "date" | "password" | "email" | "number";
+  type?: "text" | "date" | "password" | "email" | "number" | "time";
   value: string | undefined;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
@@ -45,7 +45,8 @@ const FormInput: React.FC<FormInputProps> = ({
         required={required}
         autoComplete={autoComplete}
         disabled={disabled}
-        className="text-gray-900 w-full border border-gray-300 p-3 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="text-gray-900 w-full border border-gray-300 p-3 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed [&::-webkit-calendar-picker-indicator]:block [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-100"
+        style={type === "time" ? { colorScheme: "light" } : undefined}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import type { Student } from "../components/student/StudentTypes";
-import type { Class } from "../components/class/ClassTypes";
+import type { Class, NewClass } from "../components/class/ClassTypes";
 import type { PaginatedResponse } from "../types/api";
 import apiClient from "./client";
 import { ENDPOINTS } from "./endpoints";
@@ -75,6 +75,13 @@ export interface UseFetchClassesParams {
   isActive?: boolean;
   includeInactive?: boolean;
 }
+
+export const useAddClass = () => {
+  return async (classData: NewClass) => {
+    const response = await apiClient.post(ENDPOINTS.CLASSES.CREATE, classData);
+    return response.data;
+  };
+};
 
 export const useFetchClasses = (params?: UseFetchClassesParams) => {
   const queryParams = new URLSearchParams();

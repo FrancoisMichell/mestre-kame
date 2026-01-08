@@ -16,5 +16,6 @@ export const ENDPOINTS = {
   },
   CLASSES: {
     LIST: "/classes",
+    CREATE: "/classes",
   },
 } as const;

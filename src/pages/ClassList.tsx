@@ -1,4 +1,5 @@
 import type React from "react";
+import { useNavigate } from "react-router-dom";
 import ClassCard from "../components/class/ClassCard";
 import { useClasses } from "../components/class/ClassContext";
 import { Skeleton } from "../components/common/Skeleton";
@@ -6,6 +7,7 @@ import ErrorMessage from "../components/common/ErrorMessage";
 import EmptyState from "../components/common/EmptyState";
 
 const ClassList: React.FC = () => {
+  const navigate = useNavigate();
   const {
     classes,
     meta,
@@ -72,9 +74,29 @@ const ClassList: React.FC = () => {
     <div className="pt-20 md:pt-24 px-4 md:px-5 py-3 max-w-6xl mx-auto">
       {/* Card branco com todo o conteúdo */}
       <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
-        {/* Título */}
-        <div className="mb-4 flex items-center justify-center">
+        {/* Cabeçalho com Título e Botão */}
+        <div className="mb-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-800">Turmas</h1>
+          <button
+            onClick={() => navigate("/turmas/nova")}
+            className="flex items-center justify-center gap-2 px-3 py-2.5 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors font-medium text-sm whitespace-nowrap"
+            aria-label="Nova Turma"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            <span className="hidden sm:inline">Nova Turma</span>
+          </button>
         </div>
 
         {/* Filtro */}

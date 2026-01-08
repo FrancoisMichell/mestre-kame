@@ -316,8 +316,10 @@ describe("Home", () => {
       );
 
       const { container } = renderHome();
-      const gridContainers = container.querySelectorAll(".grid");
-      const gridContainer = gridContainers[1]; // O segundo grid é o de cards
+      // Grid de cards é o que contém "lg:grid-cols-2 xl:grid-cols-3"
+      const gridContainer = container.querySelector(
+        ".grid.grid-cols-1.lg\\:grid-cols-2.xl\\:grid-cols-3",
+      );
 
       expect(gridContainer).toBeInTheDocument();
       expect(gridContainer).toHaveClass("grid");
