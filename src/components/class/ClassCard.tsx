@@ -1,18 +1,30 @@
 import type React from "react";
 import type { Class } from "./ClassTypes";
 import { formatDays, formatTime, formatDuration } from "./daysConfig";
+import { useNavigate } from "react-router-dom";
 
 export interface ClassCardProps {
   classItem: Class;
 }
 
 const ClassCard: React.FC<ClassCardProps> = ({ classItem }) => {
+  const navigate = useNavigate();
   const statusColor = classItem.isActive
     ? "bg-green-100 text-green-800"
     : "bg-gray-100 text-gray-800";
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow border border-gray-100">
+    <div
+      className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow border border-gray-100 cursor-pointer"
+      onClick={() => navigate(`/turmas/${classItem.id}/editar`)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          navigate(`/turmas/${classItem.id}/editar`);
+        }
+      }}
+    >
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <h3 className="text-lg font-bold text-gray-900">{classItem.name}</h3>

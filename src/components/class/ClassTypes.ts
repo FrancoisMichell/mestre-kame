@@ -23,3 +23,8 @@ export type NewClass = Omit<
   Class,
   "id" | "isActive" | "createdAt" | "updatedAt"
 >;
+
+// Input type used by forms when updating a class
+export type UpdateClass = Partial<
+  Omit<Class, "id" | "teacher" | "createdAt" | "updatedAt">
+>;

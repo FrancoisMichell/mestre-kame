@@ -1,6 +1,10 @@
 import useSWR from "swr";
 import type { Student } from "../components/student/StudentTypes";
-import type { Class, NewClass } from "../components/class/ClassTypes";
+import type {
+  Class,
+  NewClass,
+  UpdateClass,
+} from "../components/class/ClassTypes";
 import type { PaginatedResponse } from "../types/api";
 import apiClient from "./client";
 import { ENDPOINTS } from "./endpoints";
@@ -79,6 +83,16 @@ export interface UseFetchClassesParams {
 export const useAddClass = () => {
   return async (classData: NewClass) => {
     const response = await apiClient.post(ENDPOINTS.CLASSES.CREATE, classData);
+    return response.data;
+  };
+};
+
+export const useUpdateClass = () => {
+  return async (id: string, classData: UpdateClass) => {
+    const response = await apiClient.patch(
+      ENDPOINTS.CLASSES.UPDATE(id),
+      classData,
+    );
     return response.data;
   };
 };
