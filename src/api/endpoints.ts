@@ -17,5 +17,8 @@ export const ENDPOINTS = {
   CLASSES: {
     LIST: "/classes",
     CREATE: "/classes",
+    GET_BY_ID: (id: string) => `/classes/${id}`,
+    UPDATE: (id: string) => `/classes/${id}`,
+    DELETE: (id: string) => `/classes/${id}`,
   },
 } as const;

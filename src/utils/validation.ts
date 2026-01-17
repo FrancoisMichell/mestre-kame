@@ -358,7 +358,8 @@ export const validateStartTime = (startTime: string): ValidationResult => {
     return requiredCheck;
   }
 
-  const timePattern = /^([01]\d|2[0-3]):([0-5]\d)$/;
+  // Aceita formatos HH:MM ou H:MM (com ou sem zero à esquerda)
+  const timePattern = /^([0-1]?\d|2[0-3]):([0-5]\d)$/;
   if (!timePattern.test(startTime)) {
     return {
       isValid: false,

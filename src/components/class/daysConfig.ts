@@ -23,7 +23,12 @@ export const formatDays = (days: number[]): string => {
 };
 
 export const formatTime = (time: string): string => {
-  // Formato esperado: "HH:mm"
+  // Remove segundos se existirem (HH:MM:SS -> HH:MM)
+  if (!time) return "";
+  const parts = time.split(":");
+  if (parts.length >= 2) {
+    return `${parts[0]}:${parts[1]}`;
+  }
   return time;
 };
 

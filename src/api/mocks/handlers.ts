@@ -207,4 +207,74 @@ export const handlers = [
       },
     });
   }),
+
+  http.get(`${API_BASE_URL}/classes/:id`, ({ params }) => {
+    const { id } = params;
+    const classItem = mockClasses.find((c) => c.id === id);
+
+    if (!classItem) {
+      return HttpResponse.json(
+        { message: "Turma não encontrada" },
+        { status: 404 },
+      );
+    }
+
+    return HttpResponse.json(classItem);
+  }),
+
+  http.post(`${API_BASE_URL}/classes`, async ({ request }) => {
+    const body = (await request.json()) as Partial<Class>;
+
+    const newClass: Class = {
+      id: String(mockClasses.length + 1),
+      name: body.name || "",
+      days: body.days || [],
+      startTime: body.startTime || "",
+      durationMinutes: body.durationMinutes || 60,
+      isActive: true,
+      teacher: {
+        id: "teacher-1",
+        name: "Sensei Yamamoto",
+        email: "yamamoto@mestrekame.com",
+      },
+    };
+
+    mockClasses.push(newClass);
+    return HttpResponse.json(newClass, { status: 201 });
+  }),
+
+  http.put(`${API_BASE_URL}/classes/:id`, async ({ params, request }) => {
+    const { id } = params;
+    const body = (await request.json()) as Partial<Class>;
+    const index = mockClasses.findIndex((c) => c.id === id);
+
+    if (index === -1) {
+      return HttpResponse.json(
+        { message: "Turma não encontrada" },
+        { status: 404 },
+      );
+    }
+
+    mockClasses[index] = {
+      ...mockClasses[index],
+      ...body,
+    };
+
+    return HttpResponse.json(mockClasses[index]);
+  }),
+
+  http.delete(`${API_BASE_URL}/classes/:id`, ({ params }) => {
+    const { id } = params;
+    const index = mockClasses.findIndex((c) => c.id === id);
+
+    if (index === -1) {
+      return HttpResponse.json(
+        { message: "Turma não encontrada" },
+        { status: 404 },
+      );
+    }
+
+    mockClasses.splice(index, 1);
+    return HttpResponse.json({ message: "Turma excluída com sucesso" });
+  }),
 ];

@@ -12,6 +12,7 @@ import { AuthProvider, useAuth } from "./components/auth/AuthContext";
 import Login from "./pages/Login";
 import { setSessionExpiredCallback } from "./api/client";
 import StudentEdit from "./components/student/StudentEdit";
+import ClassEdit from "./components/class/ClassEdit";
 import LoadingSpinner from "./components/common/LoadingSpinner";
 
 const ProtectedRoute: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -79,6 +80,14 @@ const AppRoutes: React.FC = () => {
                   path="/turmas"
                 />
                 <Route element={<ClassRegister />} path="/turmas/nova" />
+                <Route
+                  element={
+                    <ClassProvider>
+                      <ClassEdit />
+                    </ClassProvider>
+                  }
+                  path="/turmas/:id/editar"
+                />
                 <Route
                   element={<h1>404 | Página não encontrada</h1>}
                   path="*"
