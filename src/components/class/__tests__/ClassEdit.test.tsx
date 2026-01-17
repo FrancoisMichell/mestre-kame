@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  act,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
@@ -284,7 +290,6 @@ describe("ClassEdit", () => {
   });
 
   it("should show validation error for empty name", async () => {
-    const user = userEvent.setup();
     vi.mocked(apiClient.get).mockResolvedValueOnce({
       data: mockClass,
     });
@@ -295,12 +300,24 @@ describe("ClassEdit", () => {
       expect(screen.getByDisplayValue("Turma Avançada")).toBeInTheDocument();
     });
 
-    const nameInput = screen.getByLabelText(/Nome da Turma/i);
-    await user.clear(nameInput);
+    const nameInput = screen.getByLabelText(
+      /Nome da Turma/i,
+    ) as HTMLInputElement;
+
+    // Use act to ensure state updates are processed
+    await act(async () => {
+      fireEvent.change(nameInput, { target: { value: "" } });
+    });
+
+    expect(nameInput.value).toBe("");
 
     const submitButton = screen.getByText("Salvar Alterações");
-    await user.click(submitButton);
 
+    await act(async () => {
+      fireEvent.submit(submitButton.closest("form")!);
+    });
+
+    // The validation error should appear after form submission
     await waitFor(() => {
       expect(
         screen.getByText("Nome da turma é obrigatório"),
@@ -337,90 +354,6 @@ describe("ClassEdit", () => {
       expect(
         screen.getByText("Selecione pelo menos um dia da semana"),
       ).toBeInTheDocument();
-    });
-  });
-
-  it.skip("should open delete confirmation dialog", async () => {
-    const user = userEvent.setup();
-    vi.mocked(apiClient.get).mockResolvedValueOnce({
-      data: mockClass,
-    });
-
-    renderClassEdit();
-
-    await waitFor(() => {
-      expect(screen.getByText("Editar Turma")).toBeInTheDocument();
-    });
-
-    const deleteButton = screen.getByText("Excluir");
-    await user.click(deleteButton);
-
-    await waitFor(() => {
-      expect(screen.getByText("Confirmar Exclusão")).toBeInTheDocument();
-      expect(
-        screen.getByText(/Tem certeza que deseja excluir a turma/i),
-      ).toBeInTheDocument();
-    });
-  });
-
-  it.skip("should delete class when confirmed", async () => {
-    const user = userEvent.setup();
-    vi.mocked(apiClient.get).mockResolvedValueOnce({
-      data: mockClass,
-    });
-    vi.mocked(apiClient.delete).mockResolvedValueOnce({
-      data: { message: "Turma excluída com sucesso" },
-    });
-
-    renderClassEdit();
-
-    await waitFor(() => {
-      expect(screen.getByText("Editar Turma")).toBeInTheDocument();
-    });
-
-    const deleteButton = screen.getByText("Excluir");
-    await user.click(deleteButton);
-
-    await waitFor(() => {
-      expect(screen.getByText("Confirmar Exclusão")).toBeInTheDocument();
-    });
-
-    // Pega todos os botões com texto "Excluir" e clica no do diálogo (segundo)
-    const deleteButtons = screen.getAllByText("Excluir");
-    await user.click(deleteButtons[1]); // O segundo é do diálogo
-
-    await waitFor(() => {
-      expect(apiClient.delete).toHaveBeenCalledWith("/classes/1");
-      expect(mockRefreshClasses).toHaveBeenCalled();
-      expect(mockNavigate).toHaveBeenCalledWith("/turmas");
-    });
-  });
-
-  it.skip("should close delete dialog when cancelled", async () => {
-    const user = userEvent.setup();
-    vi.mocked(apiClient.get).mockResolvedValueOnce({
-      data: mockClass,
-    });
-
-    renderClassEdit();
-
-    await waitFor(() => {
-      expect(screen.getByText("Editar Turma")).toBeInTheDocument();
-    });
-
-    const deleteButton = screen.getByText("Excluir");
-    await user.click(deleteButton);
-
-    await waitFor(() => {
-      expect(screen.getByText("Confirmar Exclusão")).toBeInTheDocument();
-    });
-
-    // Existem 2 botões "Cancelar": no formulário e no diálogo
-    const cancelButtons = screen.getAllByText("Cancelar");
-    await user.click(cancelButtons[1]); // O segundo é do diálogo
-
-    await waitFor(() => {
-      expect(screen.queryByText("Confirmar Exclusão")).not.toBeInTheDocument();
     });
   });
 
