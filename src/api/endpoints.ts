@@ -20,5 +20,10 @@ export const ENDPOINTS = {
     GET_BY_ID: (id: string) => `/classes/${id}`,
     UPDATE: (id: string) => `/classes/${id}`,
     DELETE: (id: string) => `/classes/${id}`,
+    GET_STUDENTS: (id: string) => `/classes/${id}/students`,
+    ENROLL_STUDENT: (classId: string, studentId: string) =>
+      `/classes/${classId}/enroll/${studentId}`,
+    UNENROLL_STUDENT: (classId: string, studentId: string) =>
+      `/classes/${classId}/enroll/${studentId}`,
   },
 } as const;

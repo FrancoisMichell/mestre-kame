@@ -14,6 +14,7 @@ import { handleError, formatErrorForUser } from "../../utils/errorHandler";
 import { toast } from "sonner";
 import { DAYS_OF_WEEK } from "./daysConfig";
 import { useUpdateClass } from "../../api/hooks";
+import ClassStudentsList from "./ClassStudentsList";
 
 const ClassEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,6 +28,7 @@ const ClassEdit: React.FC = () => {
     Record<string, string>
   >({});
   const updateClassAPI = useUpdateClass();
+  const [activeTab, setActiveTab] = useState<"dados" | "alunos">("dados");
 
   const [name, setName] = useState("");
   const [days, setDays] = useState<number[]>([]);
@@ -191,52 +193,86 @@ const ClassEdit: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 pt-24 pb-8 max-w-2xl">
-      <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="pt-20 md:pt-24 px-4 md:px-5 py-3 max-w-6xl mx-auto">
+      <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
           Editar Turma
         </h1>
 
+        {/* Tabs */}
+        <div className="border-b border-gray-200 mb-6">
+          <nav className="flex -mb-px space-x-4" aria-label="Tabs">
+            <button
+              onClick={() => setActiveTab("dados")}
+              className={`
+                py-3 px-4 text-sm font-medium border-b-2 transition-colors
+                ${
+                  activeTab === "dados"
+                    ? "border-blue-600 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }
+              `}
+            >
+              Dados da Turma
+            </button>
+            <button
+              onClick={() => setActiveTab("alunos")}
+              className={`
+                py-3 px-4 text-sm font-medium border-b-2 transition-colors
+                ${
+                  activeTab === "alunos"
+                    ? "border-blue-600 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }
+              `}
+            >
+              Alunos da Turma
+            </button>
+          </nav>
+        </div>
+
         {error && <ErrorMessage message={error} className="mb-4" />}
 
-        <form onSubmit={handleSubmit}>
-          <FormInput
-            id="name"
-            name="name"
-            label="Nome da Turma"
-            type="text"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-              if (validationErrors.name) {
-                const newErrors = { ...validationErrors };
-                delete newErrors.name;
-                setValidationErrors(newErrors);
-              }
-            }}
-            required
-            className="mb-4"
-          />
-          {validationErrors.name && (
-            <ErrorMessage
-              type="error"
-              message={validationErrors.name}
+        {/* Tab Content - Dados da Turma */}
+        {activeTab === "dados" && (
+          <form onSubmit={handleSubmit}>
+            <FormInput
+              id="name"
+              name="name"
+              label="Nome da Turma"
+              type="text"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (validationErrors.name) {
+                  const newErrors = { ...validationErrors };
+                  delete newErrors.name;
+                  setValidationErrors(newErrors);
+                }
+              }}
+              required
               className="mb-4"
             />
-          )}
+            {validationErrors.name && (
+              <ErrorMessage
+                type="error"
+                message={validationErrors.name}
+                className="mb-4"
+              />
+            )}
 
-          {/* Dias da semana */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Dias da Semana <span className="text-red-500">*</span>
-            </label>
-            <div className="grid grid-cols-3 sm:grid-cols-7 gap-2">
-              {DAYS_OF_WEEK.map((day) => (
-                <button
-                  key={day.value}
-                  type="button"
-                  onClick={() => handleDayToggle(day.value)}
-                  className={`
+            {/* Dias da semana */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Dias da Semana <span className="text-red-500">*</span>
+              </label>
+              <div className="grid grid-cols-3 sm:grid-cols-7 gap-2">
+                {DAYS_OF_WEEK.map((day) => (
+                  <button
+                    key={day.value}
+                    type="button"
+                    onClick={() => handleDayToggle(day.value)}
+                    className={`
                     px-3 py-2 text-sm font-medium rounded-md transition-colors
                     ${
                       days.includes(day.value)
@@ -244,115 +280,119 @@ const ClassEdit: React.FC = () => {
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }
                   `}
+                  >
+                    {day.short}
+                  </button>
+                ))}
+              </div>
+              {validationErrors.days && (
+                <ErrorMessage
+                  type="error"
+                  message={validationErrors.days}
+                  className="mt-2"
+                />
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div>
+                <FormInput
+                  id="startTime"
+                  name="startTime"
+                  label="Horário de Início"
+                  type="time"
+                  value={startTime}
+                  onChange={(e) => {
+                    setStartTime(e.target.value);
+                    if (validationErrors.startTime) {
+                      const newErrors = { ...validationErrors };
+                      delete newErrors.startTime;
+                      setValidationErrors(newErrors);
+                    }
+                  }}
+                  required
+                />
+                {validationErrors.startTime && (
+                  <ErrorMessage
+                    type="error"
+                    message={validationErrors.startTime}
+                    className="mt-2"
+                  />
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="durationMinutes"
+                  className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  {day.short}
-                </button>
-              ))}
+                  Duração <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="durationMinutes"
+                  name="durationMinutes"
+                  value={durationMinutes}
+                  onChange={(e) => {
+                    setDurationMinutes(e.target.value);
+                    if (validationErrors.durationMinutes) {
+                      const newErrors = { ...validationErrors };
+                      delete newErrors.durationMinutes;
+                      setValidationErrors(newErrors);
+                    }
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="30">30 minutos</option>
+                  <option value="45">45 minutos</option>
+                  <option value="60">1 hora</option>
+                  <option value="90">1 hora e 30 min</option>
+                  <option value="120">2 horas</option>
+                </select>
+                {validationErrors.durationMinutes && (
+                  <ErrorMessage
+                    type="error"
+                    message={validationErrors.durationMinutes}
+                    className="mt-2"
+                  />
+                )}
+              </div>
             </div>
-            {validationErrors.days && (
-              <ErrorMessage
-                type="error"
-                message={validationErrors.days}
-                className="mt-2"
-              />
-            )}
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div>
-              <FormInput
-                id="startTime"
-                name="startTime"
-                label="Horário de Início"
-                type="time"
-                value={startTime}
-                onChange={(e) => {
-                  setStartTime(e.target.value);
-                  if (validationErrors.startTime) {
-                    const newErrors = { ...validationErrors };
-                    delete newErrors.startTime;
-                    setValidationErrors(newErrors);
-                  }
-                }}
-                required
-              />
-              {validationErrors.startTime && (
-                <ErrorMessage
-                  type="error"
-                  message={validationErrors.startTime}
-                  className="mt-2"
+            {/* Status ativo/inativo */}
+            <div className="mb-6">
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isActive}
+                  onChange={(e) => setIsActive(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
-              )}
-            </div>
-
-            <div>
-              <label
-                htmlFor="durationMinutes"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Duração <span className="text-red-500">*</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Turma ativa
+                </span>
               </label>
-              <select
-                id="durationMinutes"
-                name="durationMinutes"
-                value={durationMinutes}
-                onChange={(e) => {
-                  setDurationMinutes(e.target.value);
-                  if (validationErrors.durationMinutes) {
-                    const newErrors = { ...validationErrors };
-                    delete newErrors.durationMinutes;
-                    setValidationErrors(newErrors);
-                  }
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="30">30 minutos</option>
-                <option value="45">45 minutos</option>
-                <option value="60">1 hora</option>
-                <option value="90">1 hora e 30 min</option>
-                <option value="120">2 horas</option>
-              </select>
-              {validationErrors.durationMinutes && (
-                <ErrorMessage
-                  type="error"
-                  message={validationErrors.durationMinutes}
-                  className="mt-2"
-                />
-              )}
             </div>
-          </div>
 
-          {/* Status ativo/inativo */}
-          <div className="mb-6">
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isActive}
-                onChange={(e) => setIsActive(e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="text-sm font-medium text-gray-700">
-                Turma ativa
-              </span>
-            </label>
-          </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button type="submit" disabled={isSaving} className="flex-1">
+                {isSaving ? "Salvando..." : "Salvar Alterações"}
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => navigate("/turmas")}
+                disabled={isSaving}
+                className="flex-1"
+              >
+                Cancelar
+              </Button>
+            </div>
+          </form>
+        )}
 
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button type="submit" disabled={isSaving} className="flex-1">
-              {isSaving ? "Salvando..." : "Salvar Alterações"}
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => navigate("/turmas")}
-              disabled={isSaving}
-              className="flex-1"
-            >
-              Cancelar
-            </Button>
-          </div>
-        </form>
+        {/* Tab Content - Alunos */}
+        {activeTab === "alunos" && id && <ClassStudentsList classId={id} />}
       </div>
     </div>
   );

@@ -20,6 +20,8 @@ export interface Student {
 
 export interface StudentCardProps {
   student: Student;
+  onClick?: (student: Student) => void;
+  hideStatus?: boolean;
 }
 
 // Input type used by forms when creating a new student.

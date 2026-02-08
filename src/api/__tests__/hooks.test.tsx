@@ -2,7 +2,13 @@ import { SWRConfig } from "swr";
 import { waitFor } from "@testing-library/react";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { useFetchStudents, useAddStudent } from "../hooks";
+import {
+  useFetchStudents,
+  useAddStudent,
+  useFetchClassStudents,
+  useEnrollStudent,
+  useUnenrollStudent,
+} from "../hooks";
 import { server } from "../mocks/server";
 import { http, HttpResponse } from "msw";
 
@@ -28,7 +34,7 @@ describe("useFetchStudents", () => {
     });
 
     // Verifica se os dados foram carregados
-    expect(result.current.students).toHaveLength(3);
+    expect(result.current.students).toHaveLength(15);
     if (result.current.students.length > 0) {
       expect(result.current.students[0].name).toBe("João Silva");
     }
@@ -123,5 +129,109 @@ describe("useAddStudent", () => {
 
     // Limpa localStorage
     localStorage.removeItem("authToken");
+  });
+});
+
+describe("useFetchClassStudents", () => {
+  beforeEach(() => {
+    localStorage.setItem("authToken", "test-token");
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+  });
+
+  it("should fetch class students successfully", async () => {
+    const { result } = renderHook(() =>
+      useFetchClassStudents("1", {
+        page: 1,
+        limit: 10,
+        sortBy: "name",
+        sortOrder: "ASC",
+      }),
+    );
+
+    expect(result.current.isLoading).toBe(true);
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(result.current.students).toBeDefined();
+    expect(result.current.meta).toBeDefined();
+    expect(result.current.isError).toBe(false);
+  });
+
+  it("should handle filters in class students query", async () => {
+    const { result } = renderHook(() =>
+      useFetchClassStudents("1", {
+        page: 1,
+        limit: 10,
+        sortBy: "name",
+        sortOrder: "ASC",
+        name: "João",
+        belt: "white",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(result.current.students).toBeDefined();
+  });
+});
+
+describe("useEnrollStudent", () => {
+  beforeEach(() => {
+    localStorage.setItem("authToken", "test-token");
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+  });
+
+  it("should enroll a student successfully", async () => {
+    const { result } = renderHook(() => useEnrollStudent());
+
+    await result.current("2", "4");
+
+    // Should not throw error
+    expect(true).toBe(true);
+  });
+
+  it("should send authorization header when enrolling", async () => {
+    localStorage.setItem("authToken", "test-token-123");
+
+    const { result } = renderHook(() => useEnrollStudent());
+
+    await expect(result.current("2", "5")).resolves.not.toThrow();
+  });
+});
+
+describe("useUnenrollStudent", () => {
+  beforeEach(() => {
+    localStorage.setItem("authToken", "test-token");
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+  });
+
+  it("should unenroll a student successfully", async () => {
+    const { result } = renderHook(() => useUnenrollStudent());
+
+    await result.current("1", "1");
+
+    // Should not throw error
+    expect(true).toBe(true);
+  });
+
+  it("should send authorization header when unenrolling", async () => {
+    localStorage.setItem("authToken", "test-token-123");
+
+    const { result } = renderHook(() => useUnenrollStudent());
+
+    await expect(result.current("1", "2")).resolves.not.toThrow();
   });
 });

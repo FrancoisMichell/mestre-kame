@@ -10,7 +10,11 @@ const formatDate = (dateString: string | null) => {
   return `${day}/${month}/${year}`;
 };
 
-const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
+const StudentCard: React.FC<StudentCardProps> = ({
+  student,
+  onClick,
+  hideStatus = false,
+}) => {
   const { name, registry, birthday, isActive, trainingSince, belt } = student;
   const beltColor = beltConfigs[belt].color;
   const navigate = useNavigate();
@@ -20,9 +24,17 @@ const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
     ? "bg-green-100 text-green-700"
     : "bg-red-100 text-red-700";
 
+  const handleClick = () => {
+    if (onClick) {
+      onClick(student);
+    } else {
+      navigate(`/aluno/${student.id}`);
+    }
+  };
+
   return (
     <div
-      onClick={() => navigate(`/aluno/${student.id}`)}
+      onClick={handleClick}
       className="flex flex-wrap items-center gap-3 md:gap-4 bg-white rounded-lg md:rounded-xl 
                  shadow-sm md:shadow-md p-2.5 md:p-4 border-l-4 border-solid 
                  transition-all duration-200 hover:shadow-md md:hover:shadow-lg 
@@ -40,15 +52,22 @@ const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
       <div className="flex-1 min-w-0">
         {/* Mobile: Compacto */}
         <div className="md:hidden">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-sm font-bold text-gray-800">{name}</h3>
-            <span className="text-xs text-gray-500">#{registry}</span>
-            <span
-              style={{ color: beltColor }}
-              className="text-xs font-semibold capitalize"
+          <div>
+            <h3
+              className="text-sm font-bold text-gray-800 truncate"
+              title={name}
             >
-              {beltConfigs[belt].name}
-            </span>
+              {name}
+            </h3>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-xs text-gray-500">#{registry}</span>
+              <span
+                style={{ color: beltColor }}
+                className="text-xs font-semibold capitalize"
+              >
+                {beltConfigs[belt].name}
+              </span>
+            </div>
           </div>
           <div className="flex gap-4 text-xs text-gray-500 mt-0.5">
             {birthday && <span>🎂 {formatDate(birthday)}</span>}
@@ -59,10 +78,15 @@ const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
         {/* Desktop: Original */}
         <div className="hidden md:block">
           <div>
-            <h3 className="text-lg font-bold text-gray-800 break-words">
-              {name} - {registry}
+            <h3
+              className="text-lg font-bold text-gray-800 truncate"
+              title={name}
+            >
+              {name}
             </h3>
             <p className="text-sm text-gray-500 mt-0.5">
+              <span className="font-semibold mr-1">Matrícula:</span>
+              <span className="mr-3">{registry}</span>
               <span className="font-semibold mr-1">Faixa:</span>
               <span
                 style={{
@@ -87,17 +111,16 @@ const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
         </div>
       </div>
 
-      {/* Status Badge - adaptativo */}
-      <div className="flex items-center shrink-0">
-        <div
-          className={`py-1 md:py-1.5 px-2 md:px-3 rounded-full text-xs font-semibold ${statusClasses}`}
-        >
-          <span className="md:hidden">{isActive ? "✓" : "✗"}</span>
-          <span className="hidden md:inline">
+      {/* Status Badge - canto superior direito */}
+      {!hideStatus && (
+        <div className="absolute top-2 right-2">
+          <div
+            className={`py-1 md:py-1.5 px-2 md:px-3 rounded-full text-[10px] md:text-xs font-semibold ${statusClasses}`}
+          >
             {isActive ? "Ativo" : "Inativo"}
-          </span>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

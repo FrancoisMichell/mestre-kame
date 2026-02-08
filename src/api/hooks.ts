@@ -136,3 +136,73 @@ export const useFetchClasses = (params?: UseFetchClassesParams) => {
     mutate,
   };
 };
+
+// ==================== CLASS-STUDENTS HOOKS ====================
+
+export interface UseFetchClassStudentsParams {
+  page?: number;
+  limit?: number;
+  sortBy?: "name" | "registry" | "belt";
+  sortOrder?: "ASC" | "DESC";
+  name?: string;
+  registry?: string;
+  belt?: string;
+}
+
+export const useFetchClassStudents = (
+  classId: string,
+  params?: UseFetchClassStudentsParams,
+) => {
+  const queryParams = new URLSearchParams();
+  if (params?.page) queryParams.append("page", params.page.toString());
+  if (params?.limit) queryParams.append("limit", params.limit.toString());
+  if (params?.sortBy) queryParams.append("sortBy", params.sortBy);
+  if (params?.sortOrder) queryParams.append("sortOrder", params.sortOrder);
+  if (params?.name) queryParams.append("name", params.name);
+  if (params?.registry) queryParams.append("registry", params.registry);
+  if (params?.belt) queryParams.append("belt", params.belt);
+
+  const url = queryParams.toString()
+    ? `${ENDPOINTS.CLASSES.GET_STUDENTS(classId)}?${queryParams.toString()}`
+    : ENDPOINTS.CLASSES.GET_STUDENTS(classId);
+
+  const hasToken = !!localStorage.getItem("authToken");
+
+  const { data, error, isLoading, mutate } = useSWR<PaginatedResponse<Student>>(
+    hasToken && classId ? url : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 5000,
+      keepPreviousData: true,
+      revalidateOnMount: true,
+    },
+  );
+
+  return {
+    students: data?.data || [],
+    meta: data?.meta,
+    isLoading,
+    isError: !!error,
+    error,
+    mutate,
+  };
+};
+
+export const useEnrollStudent = () => {
+  return async (classId: string, studentId: string) => {
+    const response = await apiClient.post(
+      ENDPOINTS.CLASSES.ENROLL_STUDENT(classId, studentId),
+    );
+    return response.data;
+  };
+};
+
+export const useUnenrollStudent = () => {
+  return async (classId: string, studentId: string) => {
+    const response = await apiClient.delete(
+      ENDPOINTS.CLASSES.UNENROLL_STUDENT(classId, studentId),
+    );
+    return response.data;
+  };
+};

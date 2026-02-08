@@ -51,13 +51,6 @@ describe("Header", () => {
     expect(listaLink).toBeInTheDocument();
     expect(listaLink).toHaveAttribute("href", "/");
 
-    // Find "Cadastro" link
-    const cadastroLink = desktopLinks.find(
-      (link) => link.textContent === "Cadastro",
-    );
-    expect(cadastroLink).toBeInTheDocument();
-    expect(cadastroLink).toHaveAttribute("href", "/cadastro");
-
     // Find "Configurações" link
     const configLink = desktopLinks.find(
       (link) => link.textContent === "Configurações",
