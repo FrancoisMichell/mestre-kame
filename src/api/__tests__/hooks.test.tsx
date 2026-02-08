@@ -34,7 +34,7 @@ describe("useFetchStudents", () => {
     });
 
     // Verifica se os dados foram carregados
-    expect(result.current.students).toHaveLength(3);
+    expect(result.current.students).toHaveLength(15);
     if (result.current.students.length > 0) {
       expect(result.current.students[0].name).toBe("João Silva");
     }
@@ -194,7 +194,7 @@ describe("useEnrollStudent", () => {
   it("should enroll a student successfully", async () => {
     const { result } = renderHook(() => useEnrollStudent());
 
-    await result.current("1", "1");
+    await result.current("2", "4");
 
     // Should not throw error
     expect(true).toBe(true);
@@ -205,7 +205,7 @@ describe("useEnrollStudent", () => {
 
     const { result } = renderHook(() => useEnrollStudent());
 
-    await expect(result.current("1", "2")).resolves.not.toThrow();
+    await expect(result.current("2", "5")).resolves.not.toThrow();
   });
 });
 

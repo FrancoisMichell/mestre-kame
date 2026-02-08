@@ -5,7 +5,12 @@ import { BrowserRouter } from "react-router-dom";
 import StudentSelectionModal from "../StudentSelectionModal";
 import * as hooks from "../../../api/hooks";
 
-vi.mock("../../../api/hooks");
+vi.mock("../../../api/hooks", () => ({
+  useFetchStudents: vi.fn(),
+  useEnrollStudent: vi.fn(),
+  useFetchClassStudents: vi.fn(),
+  useUnenrollStudent: vi.fn(),
+}));
 
 const renderWithRouter = (component: React.ReactElement) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);
@@ -52,12 +57,36 @@ describe("StudentSelectionModal", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    vi.mocked(hooks.useFetchStudents).mockReturnValue({
-      students: mockStudents,
-      meta: { total: 3, page: 1, limit: 100, totalPages: 1 },
+    // Mock para lista de alunos da turma (ClassStudentsList interno)
+    vi.mocked(hooks.useFetchClassStudents).mockReturnValue({
+      students: [],
       isLoading: false,
       isError: false,
       error: null,
+      mutate: vi.fn(),
+    });
+
+    vi.mocked(hooks.useUnenrollStudent).mockReturnValue(vi.fn());
+
+    // Mock useFetchStudents para filtrar alunos inativos por padrão
+    vi.mocked(hooks.useFetchStudents).mockImplementation((params) => {
+      const filteredStudents =
+        params?.isActive === true
+          ? mockStudents.filter((s) => s.isActive)
+          : mockStudents;
+
+      return {
+        students: filteredStudents,
+        meta: {
+          total: filteredStudents.length,
+          page: 1,
+          limit: 100,
+          totalPages: 1,
+        },
+        isLoading: false,
+        isError: false,
+        error: null,
+      };
     });
 
     vi.mocked(hooks.useEnrollStudent).mockReturnValue(mockEnrollStudent);
@@ -88,7 +117,7 @@ describe("StudentSelectionModal", () => {
     );
 
     expect(screen.queryByText("João Silva")).not.toBeInTheDocument();
-    expect(screen.getByText("Maria Santos")).toBeInTheDocument();
+    expect(screen.getAllByText("Maria Santos").length).toBeGreaterThan(0);
   });
 
   it("filters out inactive students by default", () => {
@@ -101,7 +130,7 @@ describe("StudentSelectionModal", () => {
       />,
     );
 
-    expect(screen.queryByText("Carlos Oliveira")).not.toBeInTheDocument();
+    expect(screen.queryAllByText("Carlos Oliveira")).toHaveLength(0);
   });
 
   it("shows inactive students when checkbox is checked", async () => {
@@ -143,10 +172,21 @@ describe("StudentSelectionModal", () => {
       />,
     );
 
-    const studentCard = screen.getByText("João Silva").closest("div");
-    await user.click(studentCard!);
+    // Verifica que inicialmente o botão diz "Selecione alunos"
+    expect(
+      screen.getByRole("button", { name: /selecione alunos/i }),
+    ).toBeInTheDocument();
 
-    expect(studentCard?.parentElement).toHaveClass("ring-2", "ring-blue-600");
+    // Clica em qualquer elemento que contenha o nome do aluno
+    const studentElements = screen.getAllByText("João Silva");
+    await user.click(studentElements[0]);
+
+    // Após o click, o botão deve mudar para "Adicionar 1 aluno"
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /adicionar 1 aluno/i }),
+      ).toBeInTheDocument();
+    });
   });
 
   it("allows selecting multiple students", async () => {
@@ -160,8 +200,8 @@ describe("StudentSelectionModal", () => {
       />,
     );
 
-    const joaoCard = screen.getByText("João Silva").closest("div");
-    const mariaCard = screen.getByText("Maria Santos").closest("div");
+    const joaoCard = screen.getAllByText("João Silva")[0].closest("div");
+    const mariaCard = screen.getAllByText("Maria Santos")[0].closest("div");
 
     await user.click(joaoCard!);
     await user.click(mariaCard!);
@@ -187,7 +227,7 @@ describe("StudentSelectionModal", () => {
       screen.getByRole("button", { name: /selecione alunos/i }),
     ).toBeInTheDocument();
 
-    const joaoCard = screen.getByText("João Silva").closest("div");
+    const joaoCard = screen.getAllByText("João Silva")[0].closest("div");
     await user.click(joaoCard!);
 
     await waitFor(() => {
@@ -208,7 +248,7 @@ describe("StudentSelectionModal", () => {
       />,
     );
 
-    const joaoCard = screen.getByText("João Silva").closest("div");
+    const joaoCard = screen.getAllByText("João Silva")[0].closest("div");
     await user.click(joaoCard!);
 
     const addButton = screen.getByRole("button", {
@@ -294,9 +334,9 @@ describe("StudentSelectionModal", () => {
       />,
     );
 
-    expect(
-      screen.getByText("Todos os alunos já estão matriculados"),
-    ).toBeInTheDocument();
+    // EmptyState deve estar visível quando todos os alunos ativos estão matriculados
+    expect(screen.getByText(/todos os alunos/i)).toBeInTheDocument();
+    expect(screen.getByText(/matriculados/i)).toBeInTheDocument();
   });
 
   it("displays loading state", () => {

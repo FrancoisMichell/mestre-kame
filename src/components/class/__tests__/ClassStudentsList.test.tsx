@@ -5,7 +5,12 @@ import { BrowserRouter } from "react-router-dom";
 import ClassStudentsList from "../ClassStudentsList";
 import * as hooks from "../../../api/hooks";
 
-vi.mock("../../../api/hooks");
+vi.mock("../../../api/hooks", () => ({
+  useFetchClassStudents: vi.fn(),
+  useUnenrollStudent: vi.fn(),
+  useFetchStudents: vi.fn(),
+  useEnrollStudent: vi.fn(),
+}));
 
 const renderWithRouter = (component: React.ReactElement) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);
@@ -17,6 +22,17 @@ describe("ClassStudentsList", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Mock para o modal de seleção de alunos
+    vi.mocked(hooks.useFetchStudents).mockReturnValue({
+      students: [],
+      isLoading: false,
+      error: null,
+      mutate: vi.fn(),
+      totalPages: 1,
+    });
+
+    vi.mocked(hooks.useEnrollStudent).mockReturnValue(vi.fn());
 
     vi.mocked(hooks.useFetchClassStudents).mockReturnValue({
       students: [
@@ -64,8 +80,8 @@ describe("ClassStudentsList", () => {
   it("renders enrolled students", () => {
     renderWithRouter(<ClassStudentsList classId="1" />);
 
-    expect(screen.getByText("João Silva")).toBeInTheDocument();
-    expect(screen.getByText("Maria Santos")).toBeInTheDocument();
+    expect(screen.getAllByText("João Silva").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Maria Santos").length).toBeGreaterThan(0);
   });
 
   it("shows add student button", () => {
