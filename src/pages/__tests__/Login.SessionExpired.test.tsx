@@ -73,7 +73,7 @@ describe("Login - Session Expired Integration", () => {
     renderLoginWithExpiredSession();
 
     expect(screen.getByText("Mestre Kame")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Ex: 01AA123123")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Ex: 2024010")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("********")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Entrar" })).toBeInTheDocument();
   });

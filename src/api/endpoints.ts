@@ -26,4 +26,19 @@ export const ENDPOINTS = {
     UNENROLL_STUDENT: (classId: string, studentId: string) =>
       `/classes/${classId}/enroll/${studentId}`,
   },
+  CLASS_SESSIONS: {
+    LIST: "/class-sessions",
+    CREATE: "/class-sessions",
+    GET_BY_ID: (id: string) => `/class-sessions/${id}`,
+    UPDATE: (id: string) => `/class-sessions/${id}`,
+    DELETE: (id: string) => `/class-sessions/${id}`,
+    ACTIVATE: (id: string) => `/class-sessions/${id}/activate`,
+    DEACTIVATE: (id: string) => `/class-sessions/${id}/deactivate`,
+    START: (id: string) => `/class-sessions/${id}/start`,
+    END: (id: string) => `/class-sessions/${id}/end`,
+    BY_CLASS: (classId: string) => `/class-sessions/by-class/${classId}`,
+    BY_TEACHER: (teacherId: string) =>
+      `/class-sessions/by-teacher/${teacherId}`,
+    BY_DATE_RANGE: "/class-sessions/by-date-range",
+  },
 } as const;

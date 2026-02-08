@@ -54,7 +54,7 @@ describe("Login", () => {
 
     expect(screen.getByText("Mestre Kame")).toBeInTheDocument();
     expect(screen.getByText("Faça login para continuar")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Ex: 01AA123123")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Ex: 2024010")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("********")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Entrar" })).toBeInTheDocument();
   });
@@ -62,11 +62,11 @@ describe("Login", () => {
   it("should have correct input placeholders and types", () => {
     renderLogin();
 
-    const usernameInput = screen.getByPlaceholderText("Ex: 01AA123123");
+    const usernameInput = screen.getByPlaceholderText("Ex: 2024010");
     const passwordInput = screen.getByPlaceholderText("********");
 
     expect(usernameInput).toHaveAttribute("type", "text");
-    expect(usernameInput).toHaveAttribute("placeholder", "Ex: 01AA123123");
+    expect(usernameInput).toHaveAttribute("placeholder", "Ex: 2024010");
     expect(passwordInput).toHaveAttribute("type", "password");
     expect(passwordInput).toHaveAttribute("placeholder", "********");
   });
@@ -75,7 +75,7 @@ describe("Login", () => {
     const user = userEvent.setup();
     renderLogin();
 
-    const usernameInput = screen.getByPlaceholderText("Ex: 01AA123123");
+    const usernameInput = screen.getByPlaceholderText("Ex: 2024010");
     const passwordInput = screen.getByPlaceholderText("********");
 
     await user.type(usernameInput, "joao123");
@@ -93,7 +93,7 @@ describe("Login", () => {
         user: {
           id: "1",
           name: "João Silva",
-          username: "joao123",
+          registry: "joao123",
           role: "student",
         },
       },
@@ -103,7 +103,7 @@ describe("Login", () => {
 
     renderLogin();
 
-    const usernameInput = screen.getByPlaceholderText("Ex: 01AA123123");
+    const usernameInput = screen.getByPlaceholderText("Ex: 2024010");
     const passwordInput = screen.getByPlaceholderText("********");
     const submitButton = screen.getByRole("button", { name: "Entrar" });
 
@@ -113,7 +113,7 @@ describe("Login", () => {
 
     await waitFor(() => {
       expect(apiClient.post).toHaveBeenCalledWith("/teacher/login", {
-        username: "joao123",
+        registry: "joao123",
         password: "senha123",
       });
     });
@@ -137,7 +137,7 @@ describe("Login", () => {
 
     renderLogin();
 
-    const usernameInput = screen.getByPlaceholderText("Ex: 01AA123123");
+    const usernameInput = screen.getByPlaceholderText("Ex: 2024010");
     const passwordInput = screen.getByPlaceholderText("********");
     const submitButton = screen.getByRole("button", { name: "Entrar" });
 
@@ -158,7 +158,7 @@ describe("Login", () => {
 
     renderLogin();
 
-    const usernameInput = screen.getByPlaceholderText("Ex: 01AA123123");
+    const usernameInput = screen.getByPlaceholderText("Ex: 2024010");
     const passwordInput = screen.getByPlaceholderText("********");
     const submitButton = screen.getByRole("button", { name: "Entrar" });
 
@@ -187,7 +187,7 @@ describe("Login", () => {
 
     renderLogin();
 
-    const usernameInput = screen.getByPlaceholderText("Ex: 01AA123123");
+    const usernameInput = screen.getByPlaceholderText("Ex: 2024010");
     const passwordInput = screen.getByPlaceholderText("********");
     const submitButton = screen.getByRole("button", { name: "Entrar" });
 
@@ -222,7 +222,7 @@ describe("Login", () => {
 
     renderLogin();
 
-    const usernameInput = screen.getByPlaceholderText("Ex: 01AA123123");
+    const usernameInput = screen.getByPlaceholderText("Ex: 2024010");
     const passwordInput = screen.getByPlaceholderText("********");
     const submitButton = screen.getByRole("button", { name: "Entrar" });
 
@@ -239,7 +239,7 @@ describe("Login", () => {
     resolveLogin!({
       data: {
         token: "mock-token",
-        user: { id: "1", name: "João", username: "joao123", role: "student" },
+        user: { id: "1", name: "João", registry: "joao123", role: "student" },
       },
     });
 

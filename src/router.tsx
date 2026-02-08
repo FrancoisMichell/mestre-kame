@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import ClassList from "./pages/ClassList";
 import ClassRegister from "./pages/ClassRegister";
+import SessionList from "./pages/SessionList";
+import SessionRegister from "./pages/SessionRegister";
+import SessionEdit from "./pages/SessionEdit";
 import type React from "react";
 import Header from "./components/common/Header";
 import RegisterForm from "./components/student/StudentRegisterForm";
@@ -88,6 +91,9 @@ const AppRoutes: React.FC = () => {
                   }
                   path="/turmas/:id/editar"
                 />
+                <Route element={<SessionList />} path="/aulas" />
+                <Route element={<SessionRegister />} path="/aulas/nova" />
+                <Route element={<SessionEdit />} path="/aulas/:id/editar" />
                 <Route
                   element={<h1>404 | Página não encontrada</h1>}
                   path="*"
