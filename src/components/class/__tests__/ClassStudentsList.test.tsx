@@ -26,10 +26,11 @@ describe("ClassStudentsList", () => {
     // Mock para o modal de seleção de alunos
     vi.mocked(hooks.useFetchStudents).mockReturnValue({
       students: [],
+      meta: undefined,
       isLoading: false,
+      isError: false,
       error: null,
       mutate: vi.fn(),
-      totalPages: 1,
     });
 
     vi.mocked(hooks.useEnrollStudent).mockReturnValue(vi.fn());
@@ -39,7 +40,7 @@ describe("ClassStudentsList", () => {
         {
           id: "1",
           name: "João Silva",
-          belt: "white",
+          belt: "white" as const,
           color: "#E5E7EB",
           birthday: "2000-05-15",
           registry: "987654",
@@ -49,7 +50,7 @@ describe("ClassStudentsList", () => {
         {
           id: "2",
           name: "Maria Santos",
-          belt: "blue",
+          belt: "blue" as const,
           color: "#2563eb",
           birthday: "1998-08-20",
           registry: "987655",

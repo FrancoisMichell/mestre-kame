@@ -25,7 +25,7 @@ describe("StudentSelectionModal", () => {
     {
       id: "1",
       name: "João Silva",
-      belt: "white",
+      belt: "white" as const,
       color: "#E5E7EB",
       birthday: "2000-05-15",
       registry: "987654",
@@ -35,7 +35,7 @@ describe("StudentSelectionModal", () => {
     {
       id: "2",
       name: "Maria Santos",
-      belt: "blue",
+      belt: "blue" as const,
       color: "#2563eb",
       birthday: "1998-08-20",
       registry: "987655",
@@ -45,7 +45,7 @@ describe("StudentSelectionModal", () => {
     {
       id: "3",
       name: "Carlos Oliveira",
-      belt: "brown",
+      belt: "brown" as const,
       color: "#8B6F47",
       birthday: "1995-03-10",
       registry: "987656",
@@ -60,6 +60,7 @@ describe("StudentSelectionModal", () => {
     // Mock para lista de alunos da turma (ClassStudentsList interno)
     vi.mocked(hooks.useFetchClassStudents).mockReturnValue({
       students: [],
+      meta: undefined,
       isLoading: false,
       isError: false,
       error: null,
@@ -86,6 +87,7 @@ describe("StudentSelectionModal", () => {
         isLoading: false,
         isError: false,
         error: null,
+        mutate: vi.fn(),
       };
     });
 
@@ -142,6 +144,7 @@ describe("StudentSelectionModal", () => {
       isLoading: false,
       isError: false,
       error: null,
+      mutate: vi.fn(),
     });
 
     renderWithRouter(
@@ -346,6 +349,7 @@ describe("StudentSelectionModal", () => {
       isLoading: true,
       isError: false,
       error: null,
+      mutate: vi.fn(),
     });
 
     renderWithRouter(
