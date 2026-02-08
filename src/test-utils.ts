@@ -1,4 +1,7 @@
 import { vi } from "vitest";
+import { createElement } from "react";
+import type { ReactNode } from "react";
+import { SWRConfig } from "swr";
 import type { StudentContextType } from "./components/student/StudentContext";
 import type { ClassContextType } from "./components/class/ClassContext";
 
@@ -52,3 +55,15 @@ export const createMockClassContext = (
   refreshClasses: vi.fn(),
   ...overrides,
 });
+
+/**
+ * Wrapper para testes de hooks com SWR
+ */
+export const createWrapper = () => {
+  return ({ children }: { children: ReactNode }) =>
+    createElement(
+      SWRConfig,
+      { value: { provider: () => new Map() } },
+      children,
+    );
+};

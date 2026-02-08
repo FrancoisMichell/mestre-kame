@@ -1,6 +1,7 @@
 import type React from "react";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useSWRConfig } from "swr";
 import SessionForm from "../components/session/SessionForm";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import ErrorMessage from "../components/common/ErrorMessage";
@@ -16,6 +17,7 @@ import Button from "../components/common/Button";
 const SessionEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { mutate: mutateGlobal } = useSWRConfig();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -52,8 +54,10 @@ const SessionEdit: React.FC = () => {
       setDeleteError(null);
       await deleteSession(id);
       // Invalidate all session caches to refresh the list
-      await mutate(
+      mutateGlobal(
         (key) => typeof key === "string" && key.includes("/class-sessions"),
+        undefined,
+        { revalidate: true },
       );
       navigate("/aulas");
     } catch (error) {

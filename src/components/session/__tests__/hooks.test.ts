@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
-import { wrapper } from "../../../test-utils";
+import { createWrapper } from "../../../test-utils";
 import {
   useFetchClassSessions,
   useFetchSessionsByClass,
@@ -17,7 +17,9 @@ describe("Session Hooks", () => {
 
   describe("useFetchClassSessions", () => {
     it("should fetch all sessions", async () => {
-      const { result } = renderHook(() => useFetchClassSessions(), { wrapper });
+      const { result } = renderHook(() => useFetchClassSessions(), {
+        wrapper: createWrapper(),
+      });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -31,7 +33,7 @@ describe("Session Hooks", () => {
     it("should filter sessions by classId", async () => {
       const { result } = renderHook(
         () => useFetchClassSessions({ classId: "1" }),
-        { wrapper },
+        { wrapper: createWrapper() },
       );
 
       await waitFor(() => {
@@ -50,7 +52,7 @@ describe("Session Hooks", () => {
 
       const { result } = renderHook(
         () => useFetchClassSessions({ startDate, endDate }),
-        { wrapper },
+        { wrapper: createWrapper() },
       );
 
       await waitFor(() => {
@@ -69,7 +71,7 @@ describe("Session Hooks", () => {
     it("should fetch sessions for a specific class", async () => {
       const classId = "1";
       const { result } = renderHook(() => useFetchSessionsByClass(classId), {
-        wrapper,
+        wrapper: createWrapper(),
       });
 
       await waitFor(() => {
@@ -86,7 +88,7 @@ describe("Session Hooks", () => {
     it("should return empty array if no sessions found", async () => {
       const classId = "999";
       const { result } = renderHook(() => useFetchSessionsByClass(classId), {
-        wrapper,
+        wrapper: createWrapper(),
       });
 
       await waitFor(() => {
@@ -99,7 +101,9 @@ describe("Session Hooks", () => {
 
   describe("useCreateClassSession", () => {
     it("should create a new session", async () => {
-      const { result } = renderHook(() => useCreateClassSession(), { wrapper });
+      const { result } = renderHook(() => useCreateClassSession(), {
+        wrapper: createWrapper(),
+      });
 
       const newSession: CreateClassSessionDto = {
         date: "2026-02-15",
@@ -121,7 +125,9 @@ describe("Session Hooks", () => {
 
   describe("useStartSession", () => {
     it("should start a session", async () => {
-      const { result } = renderHook(() => useStartSession(), { wrapper });
+      const { result } = renderHook(() => useStartSession(), {
+        wrapper: createWrapper(),
+      });
 
       const sessionId = "session-1";
       const updatedSession = await result.current(sessionId);
@@ -133,7 +139,9 @@ describe("Session Hooks", () => {
 
   describe("useEndSession", () => {
     it("should end a session", async () => {
-      const { result } = renderHook(() => useEndSession(), { wrapper });
+      const { result } = renderHook(() => useEndSession(), {
+        wrapper: createWrapper(),
+      });
 
       const sessionId = "session-3";
       const updatedSession = await result.current(sessionId);
