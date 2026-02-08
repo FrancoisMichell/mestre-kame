@@ -70,7 +70,7 @@ describe("Session Expired Integration Test", () => {
     render(<Router />);
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText("Ex: 01AA123123")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("Ex: 2024010")).toBeInTheDocument();
     });
   });
 });

@@ -73,7 +73,7 @@ describe("AuthContext", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    await result.current.login({ username: "joao123", password: "senha123" });
+    await result.current.login({ registry: "joao123", password: "senha123" });
 
     await waitFor(() => {
       expect(result.current.user).toEqual(mockUser);
@@ -95,7 +95,7 @@ describe("AuthContext", () => {
     });
 
     await expect(
-      result.current.login({ username: "invalid", password: "wrong" }),
+      result.current.login({ registry: "invalid", password: "wrong" }),
     ).rejects.toThrow("Invalid credentials");
 
     expect(result.current.user).toBeNull();
@@ -216,7 +216,7 @@ describe("AuthContext", () => {
 
     vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
 
-    await result.current.login({ username: "joao123", password: "senha123" });
+    await result.current.login({ registry: "joao123", password: "senha123" });
 
     await waitFor(() => {
       expect(result.current.sessionExpiredMessage).toBeNull();
@@ -320,7 +320,7 @@ describe("AuthContext", () => {
       const loginBeforeChange = result.current.login;
 
       // Login (changes user state)
-      await result.current.login({ username: "joao123", password: "senha123" });
+      await result.current.login({ registry: "joao123", password: "senha123" });
 
       await waitFor(() => {
         expect(result.current.isAuthenticated).toBe(true);

@@ -12,6 +12,9 @@ interface FormInputProps {
   autoComplete?: string;
   disabled?: boolean;
   className?: string;
+  error?: string;
+  min?: string;
+  max?: string;
 }
 
 const FormInput: React.FC<FormInputProps> = ({
@@ -26,6 +29,9 @@ const FormInput: React.FC<FormInputProps> = ({
   autoComplete,
   disabled = false,
   className = "",
+  error,
+  min,
+  max,
 }) => {
   return (
     <div className={className}>
@@ -45,9 +51,14 @@ const FormInput: React.FC<FormInputProps> = ({
         required={required}
         autoComplete={autoComplete}
         disabled={disabled}
-        className="text-gray-900 w-full border border-gray-300 p-3 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed [&::-webkit-calendar-picker-indicator]:block [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-100"
+        min={min}
+        max={max}
+        className={`text-gray-900 w-full border p-3 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed [&::-webkit-calendar-picker-indicator]:block [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-100 ${
+          error ? "border-red-500" : "border-gray-300"
+        }`}
         style={type === "time" ? { colorScheme: "light" } : undefined}
       />
+      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
     </div>
   );
 };

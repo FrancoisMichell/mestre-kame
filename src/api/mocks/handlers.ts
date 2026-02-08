@@ -1,6 +1,11 @@
 import { http, HttpResponse } from "msw";
 import type { Student } from "../../components/student/StudentTypes";
 import type { Class } from "../../components/class/ClassTypes";
+import type {
+  ClassSession,
+  CreateClassSessionDto,
+  UpdateClassSessionDto,
+} from "../../components/session/SessionTypes";
 
 const API_BASE_URL = "http://localhost:3000";
 
@@ -582,6 +587,252 @@ export const handlers = [
       });
     },
   ),
+
+  // ==================== CLASS SESSIONS ENDPOINTS ====================
+
+  // GET /class-sessions - List all sessions with filters
+  http.get(`${API_BASE_URL}/class-sessions`, ({ request }) => {
+    const url = new URL(request.url);
+    const classId = url.searchParams.get("classId");
+    const teacherId = url.searchParams.get("teacherId");
+    const startDate = url.searchParams.get("startDate");
+    const endDate = url.searchParams.get("endDate");
+    const isActive = url.searchParams.get("isActive");
+
+    let filtered = [...mockSessions];
+
+    if (classId) {
+      filtered = filtered.filter((s) => s.classId === classId);
+    }
+    if (teacherId) {
+      filtered = filtered.filter((s) => s.teacherId === teacherId);
+    }
+    if (isActive !== null) {
+      const activeFilter = isActive === "true";
+      filtered = filtered.filter((s) => s.isActive === activeFilter);
+    }
+    if (startDate) {
+      filtered = filtered.filter((s) => s.date >= startDate);
+    }
+    if (endDate) {
+      filtered = filtered.filter((s) => s.date <= endDate);
+    }
+
+    return HttpResponse.json({
+      data: filtered,
+      meta: {
+        total: filtered.length,
+        page: 1,
+        limit: filtered.length,
+        totalPages: 1,
+      },
+    });
+  }),
+
+  // GET /class-sessions/by-class/:classId
+  http.get(`${API_BASE_URL}/class-sessions/by-class/:classId`, ({ params }) => {
+    const { classId } = params;
+    const sessions = mockSessions.filter((s) => s.classId === classId);
+    return HttpResponse.json(sessions);
+  }),
+
+  // GET /class-sessions/by-teacher/:teacherId
+  http.get(
+    `${API_BASE_URL}/class-sessions/by-teacher/:teacherId`,
+    ({ params }) => {
+      const { teacherId } = params;
+      const sessions = mockSessions.filter((s) => s.teacherId === teacherId);
+      return HttpResponse.json(sessions);
+    },
+  ),
+
+  // GET /class-sessions/by-date-range
+  http.get(`${API_BASE_URL}/class-sessions/by-date-range`, ({ request }) => {
+    const url = new URL(request.url);
+    const startDate = url.searchParams.get("startDate");
+    const endDate = url.searchParams.get("endDate");
+
+    if (!startDate || !endDate) {
+      return HttpResponse.json(
+        { message: "startDate and endDate are required" },
+        { status: 400 },
+      );
+    }
+
+    const sessions = mockSessions.filter(
+      (s) => s.date >= startDate && s.date <= endDate,
+    );
+    return HttpResponse.json(sessions);
+  }),
+
+  // GET /class-sessions/:id
+  http.get(`${API_BASE_URL}/class-sessions/:id`, ({ params }) => {
+    const { id } = params;
+    const session = mockSessions.find((s) => s.id === id);
+
+    if (!session) {
+      return HttpResponse.json(
+        { message: "Session not found" },
+        { status: 404 },
+      );
+    }
+
+    return HttpResponse.json(session);
+  }),
+
+  // POST /class-sessions
+  http.post(`${API_BASE_URL}/class-sessions`, async ({ request }) => {
+    const body = (await request.json()) as CreateClassSessionDto;
+
+    // Find the class to get default times if not provided
+    const classData = mockClasses.find((c) => c.id === body.classId);
+
+    let defaultStartTime = "09:00";
+    let defaultEndTime = "10:30";
+
+    if (classData) {
+      defaultStartTime = classData.startTime;
+      // Calculate end time based on start time + duration
+      const [hours, minutes] = classData.startTime.split(":").map(Number);
+      const startDate = new Date();
+      startDate.setHours(hours, minutes, 0, 0);
+      const endDate = new Date(
+        startDate.getTime() + classData.durationMinutes * 60000,
+      );
+      defaultEndTime = `${String(endDate.getHours()).padStart(2, "0")}:${String(endDate.getMinutes()).padStart(2, "0")}`;
+    }
+
+    const newSession: ClassSession = {
+      id: `session-${mockSessions.length + 1}`,
+      date: body.date,
+      startTime: body.startTime || defaultStartTime,
+      endTime: body.endTime || defaultEndTime,
+      notes: body.notes,
+      classId: body.classId,
+      teacherId: body.teacherId,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    mockSessions.push(newSession);
+    return HttpResponse.json(newSession, { status: 201 });
+  }),
+
+  // PATCH /class-sessions/:id
+  http.patch(
+    `${API_BASE_URL}/class-sessions/:id`,
+    async ({ params, request }) => {
+      const { id } = params;
+      const body = (await request.json()) as UpdateClassSessionDto;
+      const sessionIndex = mockSessions.findIndex((s) => s.id === id);
+
+      if (sessionIndex === -1) {
+        return HttpResponse.json(
+          { message: "Session not found" },
+          { status: 404 },
+        );
+      }
+
+      mockSessions[sessionIndex] = {
+        ...mockSessions[sessionIndex],
+        ...body,
+        updatedAt: new Date().toISOString(),
+      };
+
+      return HttpResponse.json(mockSessions[sessionIndex]);
+    },
+  ),
+
+  // DELETE /class-sessions/:id
+  http.delete(`${API_BASE_URL}/class-sessions/:id`, ({ params }) => {
+    const { id } = params;
+    const sessionIndex = mockSessions.findIndex((s) => s.id === id);
+
+    if (sessionIndex === -1) {
+      return HttpResponse.json(
+        { message: "Session not found" },
+        { status: 404 },
+      );
+    }
+
+    mockSessions.splice(sessionIndex, 1);
+    return HttpResponse.json(null, { status: 204 });
+  }),
+
+  // PATCH /class-sessions/:id/activate
+  http.patch(`${API_BASE_URL}/class-sessions/:id/activate`, ({ params }) => {
+    const { id } = params;
+    const session = mockSessions.find((s) => s.id === id);
+
+    if (!session) {
+      return HttpResponse.json(
+        { message: "Session not found" },
+        { status: 404 },
+      );
+    }
+
+    session.isActive = true;
+    session.updatedAt = new Date().toISOString();
+    return HttpResponse.json(session);
+  }),
+
+  // PATCH /class-sessions/:id/deactivate
+  http.patch(`${API_BASE_URL}/class-sessions/:id/deactivate`, ({ params }) => {
+    const { id } = params;
+    const session = mockSessions.find((s) => s.id === id);
+
+    if (!session) {
+      return HttpResponse.json(
+        { message: "Session not found" },
+        { status: 404 },
+      );
+    }
+
+    session.isActive = false;
+    session.updatedAt = new Date().toISOString();
+    return HttpResponse.json(session);
+  }),
+
+  // PATCH /class-sessions/:id/start
+  http.patch(`${API_BASE_URL}/class-sessions/:id/start`, ({ params }) => {
+    const { id } = params;
+    const session = mockSessions.find((s) => s.id === id);
+
+    if (!session) {
+      return HttpResponse.json(
+        { message: "Session not found" },
+        { status: 404 },
+      );
+    }
+
+    const now = new Date();
+    session.startedAt = now.toISOString();
+    // Update startTime to actual time the session was started
+    session.startTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    session.updatedAt = now.toISOString();
+    return HttpResponse.json(session);
+  }),
+
+  // PATCH /class-sessions/:id/end
+  http.patch(`${API_BASE_URL}/class-sessions/:id/end`, ({ params }) => {
+    const { id } = params;
+    const session = mockSessions.find((s) => s.id === id);
+
+    if (!session) {
+      return HttpResponse.json(
+        { message: "Session not found" },
+        { status: 404 },
+      );
+    }
+
+    const now = new Date();
+    session.endedAt = now.toISOString();
+    // Update endTime to actual time the session was ended
+    session.endTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    session.updatedAt = now.toISOString();
+    return HttpResponse.json(session);
+  }),
 ];
 
 // Mock data for class-student enrollments
@@ -590,3 +841,68 @@ const classEnrollments: Record<string, string[]> = {
   "2": ["3"], // Class 2 has student 3
   "3": ["1"], // Class 3 has student 1
 };
+
+// Mock data for class sessions
+const mockSessions: ClassSession[] = [
+  {
+    id: "session-1",
+    date: "2026-02-10",
+    startTime: "18:30",
+    endTime: "20:00",
+    notes: "Trabalhar no triângulo e raspagens",
+    classId: "1",
+    teacherId: "teacher-1",
+    isActive: true,
+    createdAt: "2026-02-01T10:00:00Z",
+    updatedAt: "2026-02-01T10:00:00Z",
+  },
+  {
+    id: "session-2",
+    date: "2026-02-12",
+    startTime: "18:30",
+    endTime: "20:00",
+    classId: "1",
+    teacherId: "teacher-1",
+    isActive: true,
+    createdAt: "2026-02-01T10:00:00Z",
+    updatedAt: "2026-02-01T10:00:00Z",
+  },
+  {
+    id: "session-3",
+    date: "2026-02-08",
+    startTime: "09:00",
+    endTime: "10:30",
+    notes: "Aula de hoje",
+    classId: "2",
+    teacherId: "teacher-1",
+    isActive: true,
+    startedAt: "2026-02-08T09:05:00Z",
+    createdAt: "2026-02-05T10:00:00Z",
+    updatedAt: "2026-02-08T09:05:00Z",
+  },
+  {
+    id: "session-4",
+    date: "2026-02-07",
+    startTime: "09:00",
+    endTime: "10:30",
+    classId: "2",
+    teacherId: "teacher-1",
+    isActive: true,
+    startedAt: "2026-02-07T09:00:00Z",
+    endedAt: "2026-02-07T10:35:00Z",
+    createdAt: "2026-02-05T10:00:00Z",
+    updatedAt: "2026-02-07T10:35:00Z",
+  },
+  {
+    id: "session-5",
+    date: "2026-02-09",
+    startTime: "14:00",
+    endTime: "15:30",
+    notes: "Aula de amanhã",
+    classId: "3",
+    teacherId: "teacher-1",
+    isActive: true,
+    createdAt: "2026-02-05T10:00:00Z",
+    updatedAt: "2026-02-05T10:00:00Z",
+  },
+];

@@ -10,7 +10,7 @@ import { toast } from "sonner";
 
 const Login: React.FC = () => {
   const [credentials, setCredentials] = useState<LoginCredentials>({
-    username: "",
+    registry: "",
     password: "",
   });
   const [error, setError] = useState<string>("");
@@ -62,13 +62,13 @@ const Login: React.FC = () => {
 
         <form onSubmit={handleSubmit}>
           <FormInput
-            id="username"
-            name="username"
+            id="registry"
+            name="registry"
             label="Matrícula"
             type="text"
-            value={credentials.username}
+            value={credentials.registry}
             onChange={handleChange}
-            placeholder="Ex: 01AA123123"
+            placeholder="Ex: 2024010"
             autoComplete="username"
             required
             className="mb-5"

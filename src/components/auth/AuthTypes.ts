@@ -17,7 +17,7 @@ export interface User {
 }
 
 export interface LoginCredentials {
-  username: string;
+  registry: string;
   password: string;
 }
 
