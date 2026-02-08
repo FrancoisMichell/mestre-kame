@@ -24,4 +24,5 @@ dist-ssr
 *.sw?
 
 # Project files
-PROXIMOS PASSOS
+PROXIMOS_PASSOS.md
+openapi.json

@@ -40,12 +40,6 @@ const Header = () => {
             >
               Turmas
             </Link>
-            <Link
-              to="/cadastro"
-              className="text-gray-600 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium transition duration-150"
-            >
-              Cadastro
-            </Link>
             <a
               href="#config"
               className="text-gray-600 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium transition duration-150"
@@ -106,13 +100,6 @@ const Header = () => {
             className="block text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-base font-medium"
           >
             Turmas
-          </Link>
-          <Link
-            to="/cadastro"
-            onClick={closeMobileMenu}
-            className="block text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-base font-medium"
-          >
-            Cadastro
           </Link>
           <a
             href="#config"
